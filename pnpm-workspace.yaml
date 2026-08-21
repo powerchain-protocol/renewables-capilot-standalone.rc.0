@@ -1,0 +1,35 @@
+packages:
+  - "."
+
+# pnpm 11 supply-chain policy. Build scripts are denied unless explicitly approved.
+strictDepBuilds: true
+blockExoticSubdeps: true
+minimumReleaseAge: 1440
+# Direct packages intentionally pinned to just-published versions requested for this release.
+# Transitive dependencies still retain the 24-hour release-age gate.
+minimumReleaseAgeExclude:
+  - "@web3icons/react@4.1.21"
+  - "ai@7.0.68"
+  - "@ai-sdk/anthropic@4.0.40"
+  - "@ai-sdk/google@4.0.47"
+  - "@ai-sdk/deepseek@3.0.29"
+
+allowBuilds:
+  "@google/genai": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  prisma: true
+  esbuild: true
+  sharp: true
+  bufferutil: true
+  utf-8-validate: true
+  bigint-buffer: true
+  blake-hash: true
+  protobufjs: true
+  tiny-secp256k1: true
+
+# Node 24 provides native DOMException. Google auth/fetch still reaches the
+# deprecated node-domexception shim transitively, so use a local compatibility
+# package with the same public export and no install script.
+overrides:
+  node-domexception: "link:./vendor/node-domexception"

@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "actions": [
+    {
+      "id": "ai.analyze",
+      "label": "Analyze with GRIDLLM",
+      "domain": "ai",
+      "risk": "read",
+      "requiresWallet": false,
+      "requiresReview": false
+    },
+    {
+      "id": "energy.prepare-market-order",
+      "label": "Prepare energy market order",
+      "domain": "energy",
+      "risk": "prepare",
+      "requiresWallet": true,
+      "requiresReview": true
+    },
+    {
+      "id": "carbon.prepare-retirement",
+      "label": "Prepare carbon retirement",
+      "domain": "carbon",
+      "risk": "irreversible",
+      "requiresWallet": true,
+      "requiresReview": true
+    },
+    {
+      "id": "solana.review-transaction",
+      "label": "Review Solana transaction",
+      "domain": "solana",
+      "risk": "sign",
+      "requiresWallet": true,
+      "requiresReview": true
+    }
+  ]
+}
