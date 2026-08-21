@@ -7,9 +7,11 @@ import { PromptComposer } from "@/components/chat/prompt-composer";
 import { Suggestions } from "@/components/chat/suggestions";
 import { ChatSkeleton } from "@/components/chat/chat-skeleton";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Cross2Icon, TrashIcon } from "@radix-ui/react-icons";
 
 export function ChatPanel(){
-  const{messages,loading,error,send,activeProvider,activeModel}=useGridLLM();
+  const{messages,loading,error,send,stop,clear,activeProvider,activeModel}=useGridLLM();
   const{prompts,save}=useSavedPrompts();
   const{settings,setSettings}=useAISettings();
   async function savePrompt(content:string){await save({title:content.slice(0,60),content,tags:["gridllm"]})}
@@ -24,6 +26,8 @@ export function ChatPanel(){
     </div>
 
     {messages.length===0&&<><Suggestions onSelect={(v)=>void run(v)}/>{prompts.length>0&&<SavedPrompts onSelect={(content)=>void run(content)}/>}</>}
+
+    {messages.length>0&&<div className="flex items-center justify-end gap-2">{loading&&<Button type="button" variant="outline" size="sm" onClick={stop}><Cross2Icon/>Stop</Button>}<Button type="button" variant="ghost" size="sm" onClick={clear} disabled={loading}><TrashIcon/>Clear</Button></div>}
 
     <div className="space-y-3">{messages.map((m,index)=><Card key={m.id} className={`p-4 ${m.role==="user"?"ml-auto max-w-[85%] bg-[var(--muted)]":"max-w-[95%]"}`}><div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]"><span>{m.role==="user"?"You":"GRIDLLM"}</span>{m.role==="assistant"&&index===messages.length-1&&activeProvider&&<><span>·</span><span className="normal-case tracking-normal">{activeProvider}{activeModel?` / ${activeModel}`:""}</span></>}</div><div className="whitespace-pre-wrap text-sm leading-6">{m.content||"…"}</div></Card>)}{loading&&messages.at(-1)?.content===""&&<ChatSkeleton/>}{error&&<div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-600 dark:text-red-300">{error}</div>}</div>
   </div>;

@@ -52,3 +52,13 @@ Supabase RLS is the authorization boundary for browser-accessible database rows.
 - Embedded-wallet/MPC support is disabled unless a separately reviewed provider is configured.
 - Web3 icons are presentation-only and must never be used to infer asset/network identity; identity comes from validated chain IDs, addresses and mint/program IDs.
 - Pyth/Helius/other providers are data sources. Provider responses never grant mint, transfer, treasury or signing authority.
+
+## 2026 dependency remediations
+
+- Lodash is pinned to the patched 4.18.x line; browser helpers import individual methods rather than the whole package surface.
+- Direct `ws` is pinned to a patched 8.21.x line and the reusable WebSocket server enforces a 256 KiB payload ceiling with compression disabled.
+- The `@solana/web3.js -> jayson` UUID dependency is scoped to `uuid@11.1.1`, preserving CommonJS support while addressing the current bounds-check advisory.
+- `deepmerge-ts<8` is overridden to 8.0.1 because the recursive-object stack-exhaustion remediation landed in v8.
+- `image-size` has no patched upstream npm release for the current ICNS/JXL/HEIF infinite-loop advisories. The dependency is resolved to the maintained `image-size-next` fork and affected upload formats are rejected independently.
+
+See `docs/SECURITY_DEPENDENCIES.md` for lockfile verification commands.

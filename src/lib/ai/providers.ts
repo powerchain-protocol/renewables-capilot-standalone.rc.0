@@ -53,7 +53,7 @@ export function providerModel(provider: AIProviderName, profile: ModelProfile) {
 
 function languageModel(provider: AIProviderName, modelId: string): LanguageModel {
   switch (provider) {
-    case "openai": return createOpenAI({ apiKey: serverEnv.OPENAI_API_KEY })(modelId);
+    case "openai": return createOpenAI({ apiKey: serverEnv.OPENAI_API_KEY, baseURL: serverEnv.OPENAI_BASE_URL })(modelId);
     case "anthropic": return createAnthropic({ apiKey: serverEnv.ANTHROPIC_API_KEY })(modelId);
     case "google": return createGoogleGenerativeAI({ apiKey: serverEnv.GOOGLE_API_KEY })(modelId);
     case "deepseek": return createDeepSeek({ apiKey: serverEnv.DEEPSEEK_API_KEY })(modelId);

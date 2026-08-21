@@ -6,9 +6,6 @@ process.env.NEXT_TELEMETRY_DISABLED ??= "1";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  experimental: {
-    optimizePackageImports: ["@radix-ui/react-icons"],
-  },
   images: {
     formats: ["image/avif", "image/webp"],
   },

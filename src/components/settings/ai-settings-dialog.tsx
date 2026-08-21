@@ -11,6 +11,7 @@ import { useAISettings } from "@/hooks/use-ai-settings";
 const PROVIDERS: Exclude<AIProviderPreference,"auto">[] = ["openai","anthropic","google","deepseek","lora"];
 
 type ModelResponse = {
+  endpoints?: { openaiResponses: string; chatgptCompatibility: string };
   providers: Array<{
     id: Exclude<AIProviderPreference,"auto">;
     label: string;
@@ -68,6 +69,12 @@ export function AISettingsDialog({ compact=false }: { compact?: boolean }) {
         <section className="grid gap-4 rounded-2xl border bg-[var(--muted)]/40 p-4 sm:grid-cols-2">
           <label className="space-y-2 text-sm"><span className="font-semibold">Default model profile</span><select value={settings.modelProfile} onChange={e=>setSettings(v=>({...v,modelProfile:e.target.value as ModelProfile}))} className="h-10 w-full rounded-lg border bg-[var(--card)] px-3 text-sm">{MODEL_PROFILES.map(p=><option key={p.id} value={p.id}>{p.label}</option>)}</select><span className="block text-xs leading-5 text-[var(--muted-foreground)]">{MODEL_PROFILES.find(p=>p.id===settings.modelProfile)?.description}</span></label>
           <label className="flex items-start gap-3 rounded-xl border bg-[var(--card)] p-3"><input type="checkbox" checked={settings.fallbackEnabled} onChange={e=>setSettings(v=>({...v,fallbackEnabled:e.target.checked}))} className="mt-1 size-4 accent-emerald-700"/><span><span className="block text-sm font-semibold">Provider fallback</span><span className="mt-1 block text-xs leading-5 text-[var(--muted-foreground)]">If the preferred provider fails before streaming begins, route to the next configured provider.</span></span></label>
+        </section>
+
+        <section className="rounded-xl border p-4">
+          <div className="flex items-center justify-between gap-3"><div className="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">OpenAI API</div><span className="rounded-full bg-[var(--muted)] px-2 py-1 text-[9px] font-semibold">Responses API</span></div>
+          <div className="mt-3 break-all rounded-lg bg-[var(--muted)] px-3 py-2 font-mono text-[11px]">{models?.endpoints?.openaiResponses??"https://api.openai.com/v1/responses"}</div>
+          <div className="mt-2 text-xs leading-5 text-[var(--muted-foreground)]">GRIDLLM uses the OpenAI Responses endpoint by default. The compatibility CHATGPT_API_URL points to the same server-side endpoint unless explicitly overridden.</div>
         </section>
 
         <section className="rounded-xl border p-4">

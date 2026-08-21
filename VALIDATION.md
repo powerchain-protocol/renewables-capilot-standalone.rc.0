@@ -2,60 +2,79 @@
 
 ## Completed in this build environment
 
-- TypeScript/TSX syntax parse: **182 files, 0 syntax diagnostics**.
-- Internal project import audit: **0 unresolved imports**, excluding `@/generated/prisma/client`, which is intentionally created by `prisma generate`.
-- Required-structure validation: **15 critical paths present**.
-- Prisma output preflight: `scripts/prepare-prisma-output.mjs` removes only `src/generated/prisma/` and passes its path guard.
-- `src/generated/prisma/` contains no committed placeholder or non-generated file.
-- Local Node 24 `DOMException` compatibility package exports the native runtime implementation and has no install script.
-- `@solana/wallet-adapter-walletconnect` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` are absent from runtime dependencies/configuration.
-- `@google/genai` is explicitly listed in pnpm `allowBuilds`.
-- `.env.example` and `env.example` are synchronized.
-- JSON configuration files parse successfully.
-- `pnpm-workspace.yaml` parses successfully as YAML.
+- TypeScript/TSX syntax parse: **206 files, 0 syntax diagnostics**.
+- Internal project import audit: **0 unresolved source imports**, excluding `@/generated/prisma/client`, which is intentionally created by `prisma generate`.
+- Required-structure validation: **19 critical paths present**.
+- `pnpm-workspace.yaml` parses successfully with the intended narrow security overrides.
+- Next.js configuration contains no `experimental.optimizePackageImports` entry.
+- `tsconfig.json` explicitly includes `.next/dev/types/**/*.ts`.
+- Optional client environment modules no longer throw for malformed Supabase placeholder URLs.
+- Supabase client/server factories remain nullable while configuration is absent.
+- OpenAI/Helius/private-model secrets are not exposed through `NEXT_PUBLIC_*` configuration.
+- Server-only OpenAI and WebSocket modules are not re-exported by the client-safe `src/api/index.ts` barrel.
+- OpenAI Responses requests accept an allowlisted model profile rather than an arbitrary client-supplied model ID.
+- WebSocket server utility uses `maxPayload=256 KiB`, disables per-message deflate, and safely rejects malformed JSON messages.
+- Upload validation rejects ICNS/JXL/HEIF-family formats as defense in depth.
+- Direct Solana wallet dependency surface remains Wallet Standard-oriented through `@solana/wallet-adapter-react`.
+- Solana devnet/mainnet-beta RPC and canonical Token/Token-2022/ATA program IDs remain explicit.
+- `src/generated/prisma/` remains generated output only.
 
-## Dependency warning remediation
+## Dependency remediations encoded in pnpm
 
-The prior warning set contained duplicated WalletConnect 2.19.x packages, `lodash.isequal`, old `uuid` versions and `node-domexception`.
+```text
+lodash <4.18.0             -> 4.18.1
+jayson > uuid              -> 11.1.1
+jayson > ws                -> 7.5.13
+deepmerge-ts <8.0.0        -> 8.0.1
+image-size                  -> image-size-next 2.1.1
+Direct ws                   -> 8.21.3
+```
 
-This release removes the optional Solana WalletConnect adapter from the default dependency graph, which is expected to remove the WalletConnect/`lodash.isequal`/legacy-`uuid` branch on the next lockfile refresh. The remaining `node-domexception` path reached through Google GenAI is overridden with a local Node 24 native-DOMException compatibility package.
+Because this generated artifact does not include the user's local `pnpm-lock.yaml` or installed `node_modules`, the final resolved dependency graph must be confirmed after lockfile regeneration in the target checkout.
 
-Because this container does not contain the user's resolved `pnpm-lock.yaml` or installed dependency graph, the final deprecation count must be confirmed after refreshing the lockfile locally.
+## Local recovery from the reported Zod error
 
-## Requires local Node 24 dependency environment
+The application now tolerates a malformed optional Supabase URL and reports it in the UI. Prefer blank values until Supabase is actually configured:
 
-The execution container is Node 22, while the project requires Node `>=24.19.0 <25`. Run locally:
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
+
+To enable Supabase, use the real HTTPS project URL and publishable key. Never put the service-role key in `NEXT_PUBLIC_*` variables.
+
+## OpenAI API profile
+
+```text
+Base URL:       https://api.openai.com/v1
+Responses URL:  https://api.openai.com/v1/responses
+Quality:        gpt-5.6-sol
+Balanced:       gpt-5.6-terra
+Fast:           gpt-5.6-luna
+```
+
+`CHATGPT_API_URL` is a compatibility environment name and defaults to the same OpenAI Responses endpoint.
+
+## Recommended target-checkout verification
 
 ```bash
 corepack enable
 corepack use pnpm@11.22.0
 
-# Refresh once because the dependency graph changed.
 pnpm install --no-frozen-lockfile
-
-# The committed allowBuilds policy should make @google/genai non-interactive.
 pnpm prisma:generate
+pnpm config:doctor
+pnpm peers:check
+pnpm security:why
+pnpm audit --prod --audit-level=moderate
 pnpm typecheck
 pnpm prisma:validate
 pnpm build
-
-# Confirm deprecated packages are no longer in the resolved graph.
-pnpm deps:why:deprecated
+pnpm dev
 ```
 
-After the refreshed `pnpm-lock.yaml` is committed, CI should return to:
+After the updated dependency graph is verified, commit `pnpm-lock.yaml` and return CI to `pnpm install --frozen-lockfile`.
 
-```bash
-pnpm install --frozen-lockfile
-```
+## Environment limitation
 
-## Database verification
-
-```bash
-supabase start
-supabase db reset
-pnpm supabase:types
-pnpm db:test
-```
-
-`DATABASE_URL` is not required for `prisma generate`, but it is required for migrations, Prisma runtime queries, Studio, database tests and seeds.
+This container does not contain the project's installed npm dependency tree and runs Node 22 rather than the project's required Node 24.19.x. A local global TypeScript 5.8 parser was therefore used only for syntax diagnostics; it cannot replace the requested target-environment `pnpm typecheck`/`next build` verification.

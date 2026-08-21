@@ -1,2 +1,3 @@
-export { clientEnv } from "./client";
-export { serverEnv, serverEnvSchema, type ServerEnv } from "./server";
+export * from "./client";
+export * from "./server";
+export * from "./shared";

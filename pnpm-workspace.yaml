@@ -31,5 +31,14 @@ allowBuilds:
 # Node 24 provides native DOMException. Google auth/fetch still reaches the
 # deprecated node-domexception shim transitively, so use a local compatibility
 # package with the same public export and no install script.
+
+# Security overrides are intentionally narrow. They keep compatible patched
+# branches where possible and replace the unmaintained image-size package with
+# a maintained drop-in fork because upstream currently has no patched npm build.
 overrides:
   node-domexception: "link:./vendor/node-domexception"
+  "lodash@<4.18.0": "4.18.1"
+  "jayson>uuid": "11.1.1"
+  "jayson>ws": "7.5.13"
+  "deepmerge-ts@<8.0.0": "8.0.1"
+  image-size: "npm:image-size-next@2.1.1"

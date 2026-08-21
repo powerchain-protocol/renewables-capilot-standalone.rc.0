@@ -2,17 +2,26 @@ import axios from "axios";
 import { serverEnv } from "@/lib/config/env";
 
 function rpcBase() {
-  return serverEnv.HELIUS_RPC_NETWORK === "mainnet" ? "https://mainnet.helius-rpc.com" : "https://devnet.helius-rpc.com";
+  return serverEnv.HELIUS_RPC_NETWORK === "mainnet" || serverEnv.HELIUS_RPC_NETWORK === "mainnet-beta"
+    ? serverEnv.HELIUS_MAINNET_RPC_URL
+    : serverEnv.HELIUS_DEVNET_RPC_URL;
 }
 
 export function heliusRpcUrl() {
   if (!serverEnv.HELIUS_API_KEY) return null;
-  return `${rpcBase()}/?api-key=${encodeURIComponent(serverEnv.HELIUS_API_KEY)}`;
+  return `${rpcBase().replace(/\/$/, "")}/?api-key=${encodeURIComponent(serverEnv.HELIUS_API_KEY)}`;
+}
+
+export function heliusNetwork() {
+  return serverEnv.HELIUS_RPC_NETWORK === "mainnet" || serverEnv.HELIUS_RPC_NETWORK === "mainnet-beta"
+    ? "mainnet-beta"
+    : "devnet";
 }
 
 export async function getEnhancedTransactions(address: string, limit = 10) {
   if (!serverEnv.HELIUS_API_KEY) throw new Error("HELIUS_NOT_CONFIGURED");
-  const url = `https://api.helius.xyz/v0/addresses/${encodeURIComponent(address)}/transactions`;
+  const base = serverEnv.HELIUS_API_BASE_URL.replace(/\/$/, "");
+  const url = `${base}/v0/addresses/${encodeURIComponent(address)}/transactions`;
   const response = await axios.get(url, {
     params: {
       "api-key": serverEnv.HELIUS_API_KEY,

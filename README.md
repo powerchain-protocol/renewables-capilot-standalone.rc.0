@@ -20,7 +20,7 @@ A production-oriented Next.js AI workspace for **GRIDLLM**, renewable-energy ope
 - Next.js `16.3.1`, React `19.2.8`, TypeScript `5.9.3`
 - Tailwind CSS `4.3.3`, shadcn-style primitives, Radix UI and Radix Icons
 - pnpm `11.22.0` through Corepack, Node `24.19.x`
-- `@solana/web3.js`, direct Phantom/Solflare adapters and optional WalletConnect (no all-wallet aggregator)
+- `@solana/web3.js` with Wallet Standard discovery (Phantom/Solflare when installed; no all-wallet aggregator)
 - Helius RPC + Enhanced Transactions through server-only application routes
 - Supabase Auth/Postgres/RLS plus Prisma `7.9.1` with the PostgreSQL driver adapter
 - Vercel AI SDK `7` provider routing for OpenAI, Anthropic, Google GenAI, DeepSeek and private OpenAI-compatible LoRA models
@@ -127,17 +127,38 @@ Provider failure before streaming can fall through to another configured provide
 
 ## Dependency warning cleanup
 
-The previous all-wallet package pulled dozens of adapters the application did not use. This release removes `@solana/wallet-adapter-wallets` and imports the current direct Phantom and Solflare packages instead. That removes the Torus/Stellar/legacy-wallet transitive graph that caused many of the reported deprecation warnings.
+The previous all-wallet package pulled dozens of adapters the application did not use. The current release goes one step further and relies on Wallet Standard discovery through `@solana/wallet-adapter-react`, so Phantom and Solflare can be discovered at runtime without bundling their legacy per-wallet SDK adapters. This reduces the remaining old UUID/transitive wallet graph while keeping signing browser-wallet owned.
 
-Optional WalletConnect still uses Anza's current Solana WalletConnect adapter. If its upstream adapter continues to resolve an older WalletConnect 2.x transitive dependency, do not force a cross-version override without testing wallet pairing and signing; update it when the Solana adapter publishes a compatible dependency range.
+WalletConnect is intentionally not bundled in the default Solana wallet path. The application uses Wallet Standard discovery through `@solana/wallet-adapter-react`; add a separate WalletConnect adapter only if that flow is required and integration-tested.
 
 ## Helius + Solana
 
 - `HELIUS_API_KEY` is server-only.
 - standard allowlisted JSON-RPC reads prefer Helius and may fall back to the public Solana RPC.
 - Helius Enhanced API features fail clearly when Helius is not configured; they do not fabricate a public-RPC equivalent.
-- PWRC mint and Token-2022 program IDs are canonical public configuration.
+- PWRC mint plus SPL Token, Token-2022, and Associated Token Program IDs are canonical public configuration.
+- browser RPC URLs are explicit for devnet, testnet, and mainnet-beta.
+- `/api/v1/solana/config` exposes non-secret runtime network metadata for diagnostics.
 - PowerChain application program IDs remain environment-driven and blank until an actual verified deployment exists.
+
+
+### Optional Supabase boot behavior
+
+Supabase is optional during local UI development. Leave `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` blank if the project is not connected yet. Malformed placeholder URLs are treated as unconfigured at runtime so the workspace can boot, while `pnpm config:validate` still reports them as invalid.
+
+### Solana network switch
+
+```env
+# Development
+NEXT_PUBLIC_SOLANA_CLUSTER=devnet
+HELIUS_RPC_NETWORK=devnet
+
+# Production/mainnet
+# NEXT_PUBLIC_SOLANA_CLUSTER=mainnet-beta
+# HELIUS_RPC_NETWORK=mainnet-beta
+```
+
+Never expose `HELIUS_API_KEY` as a `NEXT_PUBLIC_*` variable.
 
 ## Supabase
 
@@ -154,6 +175,7 @@ pnpm typecheck
 pnpm build
 pnpm config:validate
 pnpm prisma:validate
+pnpm peers:check
 ```
 
 See [`docs/VALIDATION.md`](docs/VALIDATION.md) for checks performed while generating this artifact and the remaining network-enabled verification step.
@@ -166,7 +188,7 @@ Added canonical `src/env`, `src/constants`, `src/api/v1`, `src/schemas`, `src/da
 
 The project intentionally keeps `src/generated/prisma/` out of source control. `postinstall` runs `pnpm prisma:generate`, which first removes only the generated output directory and then regenerates it. This prevents stale placeholders or interrupted installs from causing Prisma ORM 7 output-directory errors.
 
-The default Solana wallet bundle uses Phantom and Solflare directly. The legacy Solana WalletConnect adapter is not included because its dependency tree currently introduces deprecated WalletConnect/UUID utilities.
+The default Solana wallet bundle uses Wallet Standard discovery. Compatible Phantom and Solflare wallets appear automatically when installed and unlocked. The legacy Solana WalletConnect adapter and direct per-wallet SDK adapters are not bundled by default because their older dependency graphs introduce unnecessary transitive packages.
 
 See `docs/PRISMA.md` and `docs/DEPENDENCIES.md` for maintenance details.
 
@@ -177,3 +199,15 @@ See `docs/PRISMA.md` and `docs/DEPENDENCIES.md` for maintenance details.
 - `docs/DEPENDENCIES.md` — pnpm approvals and deprecation policy
 - `src/docs/` — typed application documentation registry
 
+
+## Runtime configuration troubleshooting
+
+If a local `.env.local` still contains placeholder values, Renewables Copilot no longer fails at module evaluation. A malformed `NEXT_PUBLIC_SUPABASE_URL` disables Supabase and shows a configuration warning instead.
+
+```bash
+pnpm config:doctor
+pnpm security:why
+pnpm peers:check
+```
+
+OpenAI production traffic uses the Responses API (`https://api.openai.com/v1/responses`) through server-only routes. See `docs/OPENAI.md`, `docs/CONFIGURATION.md`, and `docs/SECURITY_DEPENDENCIES.md`.

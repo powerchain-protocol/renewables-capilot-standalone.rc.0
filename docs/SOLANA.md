@@ -1,33 +1,52 @@
-# Solana, SVM and Web3
+# Solana, Helius, and PowerChain Configuration
 
-## Runtime
+## Network selection
 
-The application uses `@solana/web3.js` with direct wallet adapters rather than the all-wallet aggregator.
+`NEXT_PUBLIC_SOLANA_CLUSTER` selects the browser wallet/RPC context:
 
-Supported wallet UI currently includes:
+- `devnet`
+- `testnet`
+- `mainnet-beta`
 
-- Phantom
-- Solflare
-- optional WalletConnect
+The browser-safe defaults are:
 
-Web3 Icons provides normalized token, network and wallet branding.
+```text
+Devnet       https://api.devnet.solana.com
+Testnet      https://api.testnet.solana.com
+Mainnet-beta https://api.mainnet-beta.solana.com
+```
 
-## RPC behavior
+Public Solana endpoints are rate-limited. Use a dedicated/private provider for production workloads.
 
-Read-only Solana RPC calls prefer Helius when configured. Allowlisted standard reads may fall back to the public Solana RPC endpoint.
+## Helius
 
-Helius Enhanced APIs remain Helius-specific and fail clearly when no Helius key is configured.
+Helius is server-only in this application. Never expose `HELIUS_API_KEY` through a `NEXT_PUBLIC_*` variable.
 
-## PWRC
+```text
+HELIUS_DEVNET_RPC_URL  https://devnet.helius-rpc.com
+HELIUS_MAINNET_RPC_URL https://mainnet.helius-rpc.com
+HELIUS_API_BASE_URL    https://api.helius.xyz
+```
 
-PWRC uses the canonical public mint/configuration supplied by PowerChain. Application program IDs are environment-driven and remain empty until independently verified deployments exist.
+RPC reads prefer Helius when a key is present and fall back to the configured Solana public RPC. Helius Enhanced Transactions fail explicitly when Helius is not configured rather than fabricating a fallback response.
 
-The token factory and AI layer must not create an alternate PWRC mint path.
+## Canonical token programs
 
-## Address validation
+```text
+SPL Token
+TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
 
-Public keys are base58-decoded with `bs58` and checked for the expected 32-byte length before use.
+Token-2022
+TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
 
-## Signing
+Associated Token Program
+ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL
+```
 
-Server routes and GRIDLLM may construct or simulate unsigned transactions. Private keys are never accepted by application APIs and signing remains inside the connected wallet.
+PowerChain PWRC remains configured as Token-2022.
+
+## Optional Supabase configuration
+
+Supabase is optional for local boot. Leave `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` blank when unused. Do not use placeholder strings such as `your-project-url`.
+
+The runtime treats malformed optional URLs as unconfigured so an optional integration cannot crash the entire UI. `pnpm config:validate` still reports malformed values explicitly.
