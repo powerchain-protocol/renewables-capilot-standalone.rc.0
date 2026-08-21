@@ -23,7 +23,7 @@ When a change touches migrations, verify RLS and grants as part of review.
 
 ## Documentation
 
-Update the relevant file under `/docs/` and add a concise entry to the root `CHANGELOG.md` for user-visible or architectural changes.
+Update the relevant file under `/docs/` and add a concise entry to the `docs/CHANGELOG.md` for user-visible or architectural changes.
 
 ## Security-sensitive changes
 

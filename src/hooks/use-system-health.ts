@@ -1,46 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSystemHealthContext } from "@/components/providers/system-health-provider";
+export type { SystemHealth } from "@/types/system-health";
 
-export type SystemHealth = {
-  ok: boolean;
-  services: {
-    openai: boolean;
-    anthropic: boolean;
-    google: boolean;
-    deepseek: boolean;
-    lora: boolean;
-    helius: boolean;
-    pyth: boolean;
-    supabase: boolean;
-  };
-  solana: {
-    cluster: "devnet" | "testnet" | "mainnet-beta";
-    publicRpc: string;
-    heliusNetwork: "devnet" | "mainnet-beta";
-    heliusConfigured: boolean;
-  };
-  aiConfiguredCount: number;
-  programsConfigured: Record<string, boolean>;
-};
+export function useSystemHealthState() {
+  return useSystemHealthContext();
+}
 
+/** Backwards-compatible data-only hook. Prefer useSystemHealthState for new UI. */
 export function useSystemHealth() {
-  const [health, setHealth] = useState<SystemHealth | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    const load = () => void fetch("/api/health", { cache: "no-store" })
-      .then((response) => response.json())
-      .then((value) => { if (active) setHealth(value); })
-      .catch(() => { if (active) setHealth(null); });
-
-    load();
-    const id = setInterval(load, 30_000);
-    return () => {
-      active = false;
-      clearInterval(id);
-    };
-  }, []);
-
-  return health;
+  return useSystemHealthContext().data;
 }

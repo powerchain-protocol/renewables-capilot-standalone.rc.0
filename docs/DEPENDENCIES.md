@@ -34,3 +34,10 @@ The previous `experimental.optimizePackageImports` entry for Radix icons was rem
 ## Registry latency warnings
 
 A message such as `Request took 10526ms: https://registry.npmjs.org/@prisma%2Fadapter-pg` is a pnpm registry-latency warning, not a Prisma runtime failure. `@prisma/adapter-pg` remains required by the Prisma 7 PostgreSQL driver-adapter setup. Once the package is present in the pnpm content-addressable store, subsequent frozen installs should normally reuse it.
+
+## Current compatibility fixes
+
+- Web3 network/token icons use static exports from `@web3icons/react`; this avoids the `NetworkIcon` dynamic-prop type mismatch observed with 4.1.21 and improves tree-shaking.
+- `utf-8-validate` is resolved to `5.0.10` to satisfy both legacy `ws@7` optional peer requirements and current `ws@8` ranges.
+- `uuid` remains narrowly upgraded only under the `jayson` path.
+- `image-size` remains replaced by `image-size-next` because the upstream parser advisories do not have a patched upstream release in the dependency branch used by Metro.

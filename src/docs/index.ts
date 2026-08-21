@@ -6,7 +6,7 @@ export type WorkspaceDoc = {
 };
 
 export const WORKSPACE_DOCS: readonly WorkspaceDoc[] = [
-  { slug: "changelog", title: "Changelog", description: "Release history and install-hardening changes.", path: "/CHANGELOG.md" },
+  { slug: "changelog", title: "Changelog", description: "Release history and install-hardening changes.", path: "/docs/CHANGELOG.md" },
   { slug: "getting-started", title: "Getting Started", description: "Install, configure and start Renewables Copilot.", path: "/docs/GETTING_STARTED.md" },
   { slug: "prisma", title: "Prisma", description: "Generated client lifecycle and database commands.", path: "/docs/PRISMA.md" },
   { slug: "dependencies", title: "Dependencies", description: "pnpm policy, build approvals and deprecation handling.", path: "/docs/DEPENDENCIES.md" },

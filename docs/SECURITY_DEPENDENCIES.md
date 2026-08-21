@@ -9,6 +9,7 @@ overrides:
   "lodash@<4.18.0": "4.18.1"
   "jayson>uuid": "11.1.1"
   "jayson>ws": "7.5.13"
+  "utf-8-validate": "5.0.10"
   "deepmerge-ts@<8.0.0": "8.0.1"
   image-size: "npm:image-size-next@2.1.1"
 ```
@@ -33,3 +34,8 @@ pnpm build
 ```
 
 Once clean, commit `pnpm-lock.yaml` and return CI to `pnpm install --frozen-lockfile`.
+
+
+## Peer compatibility
+
+`ws@7.5.13` declares optional `utf-8-validate@^5.0.2`, while newer WebSocket consumers accept `>=5.0.2`. The workspace pins `utf-8-validate@5.0.10` so both the legacy Solana/React Native transitive branch and current `ws@8` consumers share a compatible, non-vulnerable native validator without suppressing peer checks.

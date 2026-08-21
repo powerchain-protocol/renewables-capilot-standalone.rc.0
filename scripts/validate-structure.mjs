@@ -1,7 +1,7 @@
 import fs from "node:fs";
 
 const required = [
-  "CHANGELOG.md",
+  "docs/CHANGELOG.md",
   "src/docs/index.ts",
   "src/docs/prisma.md",
   "src/env/server.ts",
@@ -20,10 +20,14 @@ const required = [
   "docs/DEPENDENCIES.md",
   "supabase/migrations/0002_workspace_extensions.sql",
   "vendor/node-domexception/package.json",
+  "src/components/providers/system-health-provider.tsx",
+  "src/hooks/use-polling.ts",
+  "src/types/system-health.ts",
 ];
 
 const forbiddenSourceFiles = [
   "src/generated/prisma/README.md",
+  "tsconfig.tsbuildinfo",
 ];
 
 const missing = required.filter((path) => !fs.existsSync(path));
@@ -77,4 +81,29 @@ for (const requiredEnv of [
     process.exit(1);
   }
 }
+
+const iconSource = fs.readFileSync("src/components/ui/icons.tsx", "utf8");
+for (const requiredIconExport of ["NetworkSolana", "NetworkSui", "TokenUSDC"]) {
+  if (!iconSource.includes(requiredIconExport)) {
+    console.error(`Web3 icon wrapper must use static export: ${requiredIconExport}`);
+    process.exit(1);
+  }
+}
+if (iconSource.includes('<NetworkIcon network=')) {
+  console.error("Dynamic NetworkIcon network prop is blocked because @web3icons/react@4.1.21 typecheck rejects it in this project");
+  process.exit(1);
+}
+
+const configDoctorSource = fs.readFileSync("scripts/config-doctor.ts", "utf8");
+if (!configDoctorSource.includes("async function main()") || /^const .*await /m.test(configDoctorSource)) {
+  console.error("config-doctor must avoid top-level await under the current tsx transform");
+  process.exit(1);
+}
+
+const workspaceConfig = fs.readFileSync("pnpm-workspace.yaml", "utf8");
+if (!workspaceConfig.includes('"utf-8-validate": "5.0.10"')) {
+  console.error("pnpm workspace must pin utf-8-validate 5.0.10 for ws@7/ws@8 peer compatibility");
+  process.exit(1);
+}
+
 console.log("config invariants ok (Wallet Standard, stable Next config, dev route types, Solana RPC profile)");

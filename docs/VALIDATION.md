@@ -5,6 +5,8 @@
 - TypeScript/TSX syntax parse: **206 files, 0 syntax diagnostics**.
 - Internal project import audit: **0 unresolved source imports**, excluding `@/generated/prisma/client`, which is intentionally created by `prisma generate`.
 - Required-structure validation: **19 critical paths present**.
+- Documentation hierarchy check: repository root contains only `README.md`; long-form Markdown is canonical under `/docs/`.
+- Local Markdown link audit: **PASS**.
 - `pnpm-workspace.yaml` parses successfully with the intended narrow security overrides.
 - Next.js configuration contains no `experimental.optimizePackageImports` entry.
 - `tsconfig.json` explicitly includes `.next/dev/types/**/*.ts`.
@@ -78,3 +80,27 @@ After the updated dependency graph is verified, commit `pnpm-lock.yaml` and retu
 ## Environment limitation
 
 This container does not contain the project's installed npm dependency tree and runs Node 22 rather than the project's required Node 24.19.x. A local global TypeScript 5.8 parser was therefore used only for syntax diagnostics; it cannot replace the requested target-environment `pnpm typecheck`/`next build` verification.
+
+
+## Web3 Icons typecheck repair
+
+The UI icon wrapper uses static network/token exports (`NetworkSolana`, `NetworkSui`, `TokenUSDC`) rather than the dynamic `NetworkIcon` prop surface that produced `TS2322` with `@web3icons/react@4.1.21`. Wallet icons remain dynamic because wallet names are discovered at runtime.
+
+## Config doctor execution
+
+`pnpm config:doctor` no longer depends on top-level `await`, so it runs under the current `tsx` CommonJS transform as well as ESM-capable environments.
+
+## Reliability invariants
+
+- App-level system health is polled once through `SystemHealthProvider` and shared across UI consumers.
+- Background tabs do not continue periodic health polling; visibility restoration triggers a refresh.
+- API helper requests have bounded timeouts and distinguish timeout failures from ordinary network failures.
+- `tsconfig.tsbuildinfo` is ignored and forbidden from release artifacts.
+- Global error UI does not expose raw runtime exception messages to end users.
+
+## 2026-08-21 improvement pass verification
+
+- Structure validator: 22 critical paths, pass.
+- TypeScript/TSX syntax parse: 193 source files, 0 syntax diagnostics.
+- Internal `@/` import resolution audit: 0 unresolved project imports (generated Prisma client excluded by design).
+- Release artifact contains no `tsconfig.tsbuildinfo`.
