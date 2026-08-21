@@ -104,3 +104,20 @@ The UI icon wrapper uses static network/token exports (`NetworkSolana`, `Network
 - TypeScript/TSX syntax parse: 193 source files, 0 syntax diagnostics.
 - Internal `@/` import resolution audit: 0 unresolved project imports (generated Prisma client excluded by design).
 - Release artifact contains no `tsconfig.tsbuildinfo`.
+
+## Dashboard shell invariants
+
+- `DashboardShell` owns viewport-height and central scroll containment.
+- `AppSidebar` and `RightSidebar` use `h-dvh` and never scroll with dashboard content.
+- Only the left navigation region uses `overflow-y-auto`.
+- The right sidebar uses `--right-sidebar`, which is `#ffffff` in light theme.
+- `DashboardFooter` is part of the central content column and remains bottom-anchored on short views.
+
+## 2026-08-21 shell refactor source check
+
+- Critical structure paths: 25/25
+- TypeScript/TSX files parsed: 197
+- Syntax diagnostics: 0
+- Unresolved internal imports: 0 (generated Prisma client excluded by design)
+- Markdown local-link misses: 0
+- Dashboard shell invariants: PASS

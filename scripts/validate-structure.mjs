@@ -23,6 +23,9 @@ const required = [
   "src/components/providers/system-health-provider.tsx",
   "src/hooks/use-polling.ts",
   "src/types/system-health.ts",
+  "src/components/workspace/dashboard-shell.tsx",
+  "src/components/workspace/dashboard-footer.tsx",
+  "src/components/workspace/right-sidebar.tsx",
 ];
 
 const forbiddenSourceFiles = [
@@ -105,5 +108,31 @@ if (!workspaceConfig.includes('"utf-8-validate": "5.0.10"')) {
   console.error("pnpm workspace must pin utf-8-validate 5.0.10 for ws@7/ws@8 peer compatibility");
   process.exit(1);
 }
+
+
+const dashboardShell = fs.readFileSync("src/components/workspace/dashboard-shell.tsx", "utf8");
+const appSidebar = fs.readFileSync("src/components/workspace/app-sidebar.tsx", "utf8");
+const rightSidebar = fs.readFileSync("src/components/workspace/right-sidebar.tsx", "utf8");
+const globalsCss = fs.readFileSync("src/app/globals.css", "utf8");
+for (const requiredShellToken of ["h-dvh", "overflow-y-auto", "DashboardFooter", "RightSidebar"]) {
+  if (!dashboardShell.includes(requiredShellToken) && requiredShellToken !== "h-dvh") {
+    console.error(`Dashboard shell is missing invariant: ${requiredShellToken}`);
+    process.exit(1);
+  }
+}
+if (!dashboardShell.includes("h-dvh") || !appSidebar.includes("h-dvh") || !rightSidebar.includes("h-dvh")) {
+  console.error("Dashboard and both desktop sidebars must use viewport-height containment");
+  process.exit(1);
+}
+if (!appSidebar.includes("overflow-y-auto") || rightSidebar.includes("overflow-y-auto")) {
+  console.error("Only the left navigation region may independently scroll inside the sidebars");
+  process.exit(1);
+}
+if (!globalsCss.includes("--right-sidebar: #ffffff")) {
+  console.error("Light theme right sidebar must remain explicitly white");
+  process.exit(1);
+}
+
+console.log("dashboard shell invariants ok (fixed sidebars, center scroll, white light context surface)");
 
 console.log("config invariants ok (Wallet Standard, stable Next config, dev route types, Solana RPC profile)");

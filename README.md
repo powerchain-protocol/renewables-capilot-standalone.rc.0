@@ -33,9 +33,23 @@ Operational demo values are explicitly labelled as sample data until a live tele
 | **Solana / SVM** | Wallet Standard discovery, `@solana/web3.js`, devnet/mainnet-beta profiles, SPL Token, Token-2022 and ATA identifiers |
 | **Helius & Pyth** | Server-only Helius RPC/Enhanced API access, public Solana read fallback, Pyth/Hermes oracle adapter boundary |
 | **Persistence** | Supabase Auth/Postgres/RLS, Prisma 7 PostgreSQL adapter, migrations, seeds, saved prompts and user preferences |
-| **UI system** | Light/dark themes, responsive app shell, Radix/shadcn-style primitives, Web3 Icons, loading/error/not-found states |
+| **UI system** | Full-height three-column dashboard shell, independently scrollable content, fixed left/right sidebars, light/dark themes, Radix/shadcn-style primitives, Web3 Icons, loading/error/not-found states |
 | **PWA & account surfaces** | PWA route, profiles, accounts, balances, settings, wallet management and responsive mobile navigation |
 | **Security** | Server-only secrets, resilient env parsing, bounded uploads/WebSockets, dependency auditing, fail-closed provider behavior |
+
+## Dashboard shell and scrolling
+
+The desktop workspace uses a full-height three-column shell:
+
+```text
+Left navigation      Dashboard content                 Right context
+238 px               flexible                         296 px
+full viewport        independently scrollable         full viewport
+fixed shell          footer follows content           fixed shell
+nav list scrolls                                       white in light theme
+```
+
+Only the navigation list inside the left sidebar scrolls independently. The sidebars themselves remain pinned to the viewport while the central dashboard content scrolls. The dashboard footer is anchored to the bottom on short pages and follows the content naturally on long pages.
 
 ## Application architecture
 

@@ -1,4 +1,14 @@
 # Changelog
+## 2026-08-21 — Full-height dashboard shell
+
+- Added a dedicated `DashboardShell` component with a true `100dvh` three-column layout.
+- Left and right sidebars now remain pinned while the center dashboard scrolls independently.
+- Restricted independent sidebar scrolling to the left navigation list; logo and utility actions remain fixed.
+- Added a full-height `RightSidebar` with an explicit white light-theme surface and dark-theme counterpart.
+- Added `DashboardFooter`, bottom-anchored for short pages and naturally following long dashboard content.
+- Moved workspace layout composition into dedicated components and retained `ContextPanel` as a compatibility export.
+- Added a workspace component barrel and replaced dead documentation/PWRC controls with navigable links.
+
 ## 2026-08-21 — Build/typecheck fixes
 
 - Fixed `scripts/config-doctor.ts` for `tsx`/CJS execution by moving dynamic imports into an async `main()` function instead of using top-level `await`.

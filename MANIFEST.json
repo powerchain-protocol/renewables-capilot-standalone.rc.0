@@ -1,7 +1,7 @@
 {
   "name": "@powerchain/renewables-copilot",
   "version": "1.0.0",
-  "generatedAt": "2026-08-21T16:39:00+03:00",
+  "generatedAt": "2026-08-21T18:59:00+03:00",
   "files": [
     {
       "path": ".env.example",
@@ -25,8 +25,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "959cdbdb7c8a55c2c3e7a24f4b86d54f416532b14f220a05031e7cc55a511cc2",
-      "bytes": 12832
+      "sha256": "35ba368cd5602298dc882fe69515f1bce4ab727b7868a3234d11b260e5240f90",
+      "bytes": 13645
     },
     {
       "path": "components.json",
@@ -45,8 +45,8 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "sha256": "2d910c9af6a66b0dcf0b4c248fedfcb84a28ac4ee0ebe9a53b736ad004e5bebc",
-      "bytes": 7629
+      "sha256": "bd9688c46e5853c1fde28557e7d4ef6fa80bf9d0a1b9edc23ec881605a7a1c2b",
+      "bytes": 8409
     },
     {
       "path": "docs/CONFIGURATION.md",
@@ -120,8 +120,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "sha256": "d76c697657d2f6c71114d2599b3c528067048ec9cf2062f87fba4c1e4fdbbe6b",
-      "bytes": 5065
+      "sha256": "272c3eea22b5dd7465f11e72cbd69079415f26c8da6efa7a9195084204b0c9d4",
+      "bytes": 5777
     },
     {
       "path": "env.example",
@@ -214,14 +214,14 @@
       "bytes": 60
     },
     {
-      "path": "prisma.config.ts",
-      "sha256": "0036285af190745a8c170a5f44b09e401e392311f9595190558c61b150a15ebd",
-      "bytes": 542
-    },
-    {
       "path": "prisma/schema.prisma",
       "sha256": "2982a375f9564cc8d30ed533400e08ce2b4695a42421ae8a1923a0e5c5d2a427",
       "bytes": 4556
+    },
+    {
+      "path": "prisma.config.ts",
+      "sha256": "0036285af190745a8c170a5f44b09e401e392311f9595190558c61b150a15ebd",
+      "bytes": 542
     },
     {
       "path": "public/brand/logo-green.png",
@@ -270,13 +270,8 @@
     },
     {
       "path": "scripts/validate-structure.mjs",
-      "sha256": "ff2598127cc74330f5d47a30bf6b8a28b74280dd0a6782f581be99caf06a4fb5",
-      "bytes": 4153
-    },
-    {
-      "path": "src/actions.json",
-      "sha256": "91657d130018f0031ccd781c0af500a14366174a4c2d9f9cc0a178c6356612f0",
-      "bytes": 857
+      "sha256": "3a9ca797c86dfd037c4f0ff6791b103579ee83dace5409c34495cb9f6ad98276",
+      "bytes": 5636
     },
     {
       "path": "src/actions/index.ts",
@@ -287,6 +282,11 @@
       "path": "src/actions/registry.ts",
       "sha256": "9d1dbff10bed46a36fe798e871a3d21c098f3c479126a42ab3a494e8a1cabe11",
       "bytes": 258
+    },
+    {
+      "path": "src/actions.json",
+      "sha256": "91657d130018f0031ccd781c0af500a14366174a4c2d9f9cc0a178c6356612f0",
+      "bytes": 857
     },
     {
       "path": "src/agents/index.ts",
@@ -485,8 +485,8 @@
     },
     {
       "path": "src/app/globals.css",
-      "sha256": "7ccb29d91abeaaff8e7890fa6c4b7aeef8df74abb7497553594d32954837797e",
-      "bytes": 2399
+      "sha256": "d80d6deaf4f2303e18ea266c35a63aab57ccce664053a9c63436885f532f8bf7",
+      "bytes": 2499
     },
     {
       "path": "src/app/layout.tsx",
@@ -514,14 +514,14 @@
       "bytes": 157
     },
     {
-      "path": "src/clients.ts",
-      "sha256": "9d8a78e01c4e15338c459c8f6305906a88bb0e0d0990071028da7c1823bd9b6d",
-      "bytes": 33
-    },
-    {
       "path": "src/clients/index.ts",
       "sha256": "3809b0426ade19218460ed578adbde219039a5c9ef9bbfb1355b5aef1d6fe943",
       "bytes": 170
+    },
+    {
+      "path": "src/clients.ts",
+      "sha256": "9d8a78e01c4e15338c459c8f6305906a88bb0e0d0990071028da7c1823bd9b6d",
+      "bytes": 33
     },
     {
       "path": "src/components/brand/powerchain-logo.tsx",
@@ -650,8 +650,8 @@
     },
     {
       "path": "src/components/workspace/app-sidebar.tsx",
-      "sha256": "c9e458b7b3ea9349939c3aed34fba22b1c9fdbc58f611c36905373e33fdcaf2a",
-      "bytes": 2848
+      "sha256": "64fc62bd70982d894f6d17a62a340e62dc77d9b83c0d52bae851f54782f0fccf",
+      "bytes": 2983
     },
     {
       "path": "src/components/workspace/chat-panel.tsx",
@@ -665,8 +665,23 @@
     },
     {
       "path": "src/components/workspace/context-panel.tsx",
-      "sha256": "976845634827629a9f7287db0e294662547611d49f258b498dcb7a20ac797eac",
-      "bytes": 3878
+      "sha256": "2934f78b3f4d3ceae74dc432b005c144f6aaa54fa3c807304aecbf895869617d",
+      "bytes": 99
+    },
+    {
+      "path": "src/components/workspace/dashboard-footer.tsx",
+      "sha256": "18a18ff51f0fb9b3e1d29a769d731ef9e6edec6c7919e312d5e9baaabeb22b33",
+      "bytes": 1523
+    },
+    {
+      "path": "src/components/workspace/dashboard-shell.tsx",
+      "sha256": "df0c3a5e0134bd4861d4bdbccdf9ca1b1e9d58dbaf992a2fda73bd23cddc9e2d",
+      "bytes": 1410
+    },
+    {
+      "path": "src/components/workspace/index.ts",
+      "sha256": "a2d5d4b4360e2ac818d95bca5b54a92ce81651bb37f0f1c2d908979237afb9bb",
+      "bytes": 353
     },
     {
       "path": "src/components/workspace/metric-card.tsx",
@@ -680,8 +695,13 @@
     },
     {
       "path": "src/components/workspace/renewables-workspace.tsx",
-      "sha256": "040fca8d22f02a40986237875b9e1aad44d0b179e9dc3b7354c161938a50114d",
-      "bytes": 2286
+      "sha256": "bd9489f3d1d5ed33f7c9b6c081b881d5e6e0f2f5dcca5b0f6937ba3f503b6676",
+      "bytes": 1984
+    },
+    {
+      "path": "src/components/workspace/right-sidebar.tsx",
+      "sha256": "767cf2142ff731b892d84a563362bc8dcfaa1cd898723e3d73364494aa68f89f",
+      "bytes": 5545
     },
     {
       "path": "src/components/workspace/system-status.tsx",
@@ -690,8 +710,8 @@
     },
     {
       "path": "src/components/workspace/topbar.tsx",
-      "sha256": "f392d4ef3189a10d2a77a7c9d6e2d5699fde35796d152bf7f1b8d76c113aee65",
-      "bytes": 2132
+      "sha256": "ec24ec6ea6f1dbe60115a7e378f8ef43a57c23bdf49231ccf72956b5badeee27",
+      "bytes": 2128
     },
     {
       "path": "src/constants/ai.ts",
@@ -914,11 +934,6 @@
       "bytes": 300
     },
     {
-      "path": "src/lib/ai.ts",
-      "sha256": "76a84ef296d45b7b74a1ebf37a97e35a301f7bda45f7db2b7bd05e49dc3ec519",
-      "bytes": 112
-    },
-    {
       "path": "src/lib/ai/model-registry.ts",
       "sha256": "96a430ecb8ab05c84a159c57705a3ceba5e40b33299ffaa1dcaf76979569062d",
       "bytes": 534
@@ -937,6 +952,11 @@
       "path": "src/lib/ai/system-prompt.ts",
       "sha256": "78d89fa42797a457d4c825a21590a34ef42f07e3f1f88160d72933a00a89a7cd",
       "bytes": 1015
+    },
+    {
+      "path": "src/lib/ai.ts",
+      "sha256": "76a84ef296d45b7b74a1ebf37a97e35a301f7bda45f7db2b7bd05e49dc3ec519",
+      "bytes": 112
     },
     {
       "path": "src/lib/config/env.ts",
@@ -994,11 +1014,6 @@
       "bytes": 698
     },
     {
-      "path": "src/lib/solana.ts",
-      "sha256": "0f095531f3e510318aba60fdfa5b2de9d5ff5ccba1b638d336a00564ec30e3e0",
-      "bytes": 108
-    },
-    {
       "path": "src/lib/solana/config.ts",
       "sha256": "304cd29d44dee8a30bbb293f9da62f5ac9ffa4c8780f192c82d48ab9317aa526",
       "bytes": 1097
@@ -1012,6 +1027,11 @@
       "path": "src/lib/solana/rpc.ts",
       "sha256": "2aadf608983a267b6ad0cd3af63e0e5138355b305232e1cb2e15923719558a23",
       "bytes": 1423
+    },
+    {
+      "path": "src/lib/solana.ts",
+      "sha256": "0f095531f3e510318aba60fdfa5b2de9d5ff5ccba1b638d336a00564ec30e3e0",
+      "bytes": 108
     },
     {
       "path": "src/lib/supabase/client.ts",
@@ -1029,11 +1049,6 @@
       "bytes": 1020
     },
     {
-      "path": "src/lib/utils.ts",
-      "sha256": "bfe8a15b44315e7613389f9dec6bd6620807ee80c7cdb5ca26b73f71f1326278",
-      "bytes": 393
-    },
-    {
       "path": "src/lib/utils/index.ts",
       "sha256": "7aaee069ad74183d1a3583da69d2a8db1b0cbab7664a58e10511b6246069445b",
       "bytes": 25
@@ -1042,6 +1057,11 @@
       "path": "src/lib/utils/utils.ts",
       "sha256": "a110b486161fbf1aea5cb017d7456fd734df5e57f7fdc3ae59a0724d921c20b3",
       "bytes": 62
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "sha256": "bfe8a15b44315e7613389f9dec6bd6620807ee80c7cdb5ca26b73f71f1326278",
+      "bytes": 393
     },
     {
       "path": "src/mcp/index.ts",

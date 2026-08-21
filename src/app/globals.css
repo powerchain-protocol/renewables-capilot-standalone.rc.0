@@ -17,6 +17,8 @@
   --accent-foreground: #064e3b;
   --danger: #b42318;
   --ring: #0b7a53;
+  --sidebar: #ffffff;
+  --right-sidebar: #ffffff;
 }
 
 .dark {
@@ -34,6 +36,8 @@
   --accent-foreground: #bdf6da;
   --danger: #ff7b72;
   --ring: #34d399;
+  --sidebar: #0d1713;
+  --right-sidebar: #0d1713;
 }
 
 * { border-color: var(--border); box-sizing: border-box; }
