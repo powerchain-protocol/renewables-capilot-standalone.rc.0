@@ -123,6 +123,12 @@ The deployable applications remain separate by responsibility: Web owns public a
 \`\`\`bash
 git clone https://github.com/powerchain-protocol/powerchain-capilot.git
 cd powerchain-capilot
+
+# The overlay installer must run once before these pnpm lifecycle scripts exist.
+# If the overlay is extracted next to this repository:
+node ../powerchain-routing-backend-overlay/bootstrap.mjs .
+
+pnpm overlay:verify
 corepack enable
 corepack use pnpm@11.22.0
 pnpm install --no-frozen-lockfile
@@ -160,6 +166,7 @@ if (!fs.existsSync(path.join(target, "package.json"))) {
 const skip = new Set([
   "README.md",
   "bootstrap.mjs",
+  "setup.mjs",
   "package.patch.json",
   "pnpm-workspace.patch.yaml",
   "apps/web/package.patch.json",
@@ -189,7 +196,7 @@ ensureWorkspaceConfig(path.join(target, "pnpm-workspace.yaml"));
 ensureRootReadmeApplications(path.join(target, "README.md"));
 
 const rootPackage = readJson(path.join(target, "package.json"));
-const requiredRootScripts = ["workspace:doctor", "prisma:generate", "config:doctor", "peers:check", "typecheck", "build:apps", "dev:apps"];
+const requiredRootScripts = ["overlay:verify", "workspace:doctor", "prisma:generate", "config:doctor", "peers:check", "typecheck", "build:apps", "dev:apps"];
 const missingRootScripts = requiredRootScripts.filter((name) => !rootPackage.scripts?.[name]);
 if (missingRootScripts.length) {
   console.error(`fatal: root package.json verification failed; missing scripts: ${missingRootScripts.join(", ")}`);

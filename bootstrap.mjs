@@ -33,6 +33,7 @@ if (apply.status !== 0) fail(`Overlay application failed with exit code ${apply.
 
 const pkg = JSON.parse(readFileSync(targetPackage, "utf8"));
 const requiredScripts = [
+  "overlay:verify",
   "workspace:doctor",
   "prisma:generate",
   "config:doctor",
@@ -58,6 +59,7 @@ console.log(`Installed root commands: ${requiredScripts.join(", ")}`);
 console.log("\nRepository root:");
 console.log(`  ${target}`);
 console.log("\nNext (run from that repository root):");
+console.log("  pnpm overlay:verify");
 console.log("  corepack enable");
 console.log("  corepack use pnpm@11.22.0");
 console.log("  pnpm install --no-frozen-lockfile");

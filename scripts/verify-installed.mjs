@@ -8,7 +8,7 @@ if (!existsSync(pkgFile)) {
   process.exit(1);
 }
 const pkg = JSON.parse(readFileSync(pkgFile, "utf8"));
-const names = ["workspace:doctor","prisma:generate","config:doctor","peers:check","typecheck","build:apps","dev:apps"];
+const names = ["overlay:verify","workspace:doctor","prisma:generate","config:doctor","peers:check","typecheck","build:apps","dev:apps"];
 console.log(`Root: ${root}`);
 console.log(`Package: ${pkg.name ?? "unnamed"}`);
 for (const name of names) console.log(`${name.padEnd(18)} ${pkg.scripts?.[name] ? "installed ✓" : "MISSING ✗"}`);
