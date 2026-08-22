@@ -1,0 +1,9 @@
+{
+  "primary": {"provider":"vercel","web":"web.powerchain.app","copilot":"copilot.powerchain.app","backend":"api.powerchain.app"},
+  "secondary": {"provider":"cloudflare","mode":"warm-standby"},
+  "emergency": [
+    {"provider":"aws","apps":["web","copilot","backend"]},
+    {"provider":"hostinger","apps":["web","copilot"]},
+    {"provider":"firebase","apps":["web"]}
+  ]
+}

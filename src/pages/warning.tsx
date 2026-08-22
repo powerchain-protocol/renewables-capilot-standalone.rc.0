@@ -1,2 +1,0 @@
-import { PageShell } from "../../packages/pages/page-shell";
-export default function Page(){return <PageShell title="System warning" description="Review degraded providers, stale telemetry or infrastructure warnings before continuing."><div className="rounded-2xl border bg-[var(--card)] p-6 text-sm text-[var(--muted-foreground)]">This surface is wired as a modular workspace boundary and is ready for its domain-specific data adapter.</div></PageShell>}

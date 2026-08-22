@@ -1,2 +1,0 @@
-import { cn } from "@/lib/utils";
-export function Avatar({name,src,className}:{name:string;src?:string;className?:string}){const initials=name.split(/\s+/).map(v=>v[0]).join("").slice(0,2).toUpperCase();return <span className={cn("inline-flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-[var(--muted)] text-xs font-semibold",className)}>{src?<img src={src} alt={name} className="size-full object-cover"/>:initials}</span>}

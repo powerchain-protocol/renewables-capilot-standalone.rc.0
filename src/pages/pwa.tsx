@@ -1,3 +1,0 @@
-import { Card } from "@/components/ui/card";
-import { PageShell } from "../../packages/pages/page-shell";
-export default function PwaPage(){return <PageShell title="PowerChain PWA" description="Installable operational access for Renewables Copilot."><div className="grid gap-4 md:grid-cols-3">{[["Standalone","App manifest provides standalone display mode."],["Responsive","Sidebar, context and Copilot composer adapt to field screens."],["Safe offline boundary","No signing authority or fabricated live telemetry is cached by the PWA layer."]].map(([a,b])=><Card key={a} className="p-5"><div className="text-sm font-semibold">{a}</div><p className="mt-2 text-xs leading-5 text-[var(--muted-foreground)]">{b}</p></Card>)}</div></PageShell>}

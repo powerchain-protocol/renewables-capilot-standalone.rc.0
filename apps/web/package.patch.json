@@ -1,0 +1,8 @@
+{
+  "name": "@powerchain/web",
+  "scripts": {
+    "dev": "NEXT_TELEMETRY_DISABLED=1 next dev --turbopack -p 3000",
+    "start": "NEXT_TELEMETRY_DISABLED=1 next start -p 3000"
+  },
+  "dependencies": { "@powerchain/authz": "workspace:*" }
+}

@@ -1,2 +1,0 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
-export type Database = { public: { Tables: { saved_prompts: { Row: { id:string; user_id:string|null; title:string; content:string; tags:string[]; created_at:string; updated_at:string }; Insert: { id?:string; user_id?:string|null; title:string; content:string; tags?:string[]; created_at?:string; updated_at?:string }; Update: Partial<Database["public"]["Tables"]["saved_prompts"]["Insert"]> } }; Views: {}; Functions: {}; Enums: {}; CompositeTypes: {} } };

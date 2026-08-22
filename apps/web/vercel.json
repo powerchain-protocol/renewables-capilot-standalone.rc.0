@@ -1,0 +1,1 @@
+{"version":2,"framework":"nextjs","buildCommand":"pnpm --filter @powerchain/web build","installCommand":"corepack enable && corepack use pnpm@11.22.0 && pnpm install --frozen-lockfile"}

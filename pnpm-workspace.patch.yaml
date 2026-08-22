@@ -1,0 +1,12 @@
+# Merge into pnpm-workspace.yaml
+packages:
+  - apps/*
+  - packages/*
+  - programs/*
+
+overrides:
+  utf-8-validate: 5.0.10
+
+peerDependencyRules:
+  allowedVersions:
+    utf-8-validate: ">=5.0.2"

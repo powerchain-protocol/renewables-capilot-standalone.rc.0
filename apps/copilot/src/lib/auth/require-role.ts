@@ -1,0 +1,4 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { can, type Capability, type PowerChainRole } from "@powerchain/authz";
+export async function requireRole(capability:Capability){const backend=process.env.BACKEND_APP_URL||process.env.BACKEND_APP_LOCAL_URL||"http://localhost:3002";const web=process.env.WEB_APP_URL||process.env.WEB_APP_LOCAL_URL||"http://localhost:3000";const incoming=await headers();const response=await fetch(`${backend.replace(/\/$/,"")}/api/v1/session`,{headers:{cookie:incoming.get("cookie")||""},cache:"no-store"}).catch(()=>null);if(!response?.ok)redirect(`${web.replace(/\/$/,"")}/signin`);const session=await response.json() as {authenticated:boolean;role:PowerChainRole};if(!session.authenticated||!can(session.role,capability))redirect(`${web.replace(/\/$/,"")}/signin`);return session}

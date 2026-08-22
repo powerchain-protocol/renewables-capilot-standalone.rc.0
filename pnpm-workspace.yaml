@@ -1,12 +1,11 @@
 packages:
-  - "."
+  - "apps/*"
+  - "packages/*"
+  - "programs/*"
 
-# pnpm 11 supply-chain policy. Build scripts are denied unless explicitly approved.
 strictDepBuilds: true
 blockExoticSubdeps: true
 minimumReleaseAge: 1440
-# Direct packages intentionally pinned to just-published versions requested for this release.
-# Transitive dependencies still retain the 24-hour release-age gate.
 minimumReleaseAgeExclude:
   - "@web3icons/react@4.1.21"
   - "ai@7.0.68"
@@ -28,13 +27,6 @@ allowBuilds:
   protobufjs: true
   tiny-secp256k1: true
 
-# Node 24 provides native DOMException. Google auth/fetch still reaches the
-# deprecated node-domexception shim transitively, so use a local compatibility
-# package with the same public export and no install script.
-
-# Security overrides are intentionally narrow. They keep compatible patched
-# branches where possible and replace the unmaintained image-size package with
-# a maintained drop-in fork because upstream currently has no patched npm build.
 overrides:
   node-domexception: "link:./vendor/node-domexception"
   "lodash@<4.18.0": "4.18.1"

@@ -1,0 +1,7 @@
+FROM node:24-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3002
+COPY apps/backend/.next/standalone ./
+COPY apps/backend/.next/static ./apps/backend/.next/static
+EXPOSE 3002
+CMD ["node","apps/backend/server.js"]

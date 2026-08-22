@@ -1,0 +1,6 @@
+import type { PowerChainRole } from "@powerchain/authz";
+const encoder=new TextEncoder();
+function base64url(bytes:ArrayBuffer){return Buffer.from(bytes).toString("base64url")}
+async function key(secret:string){return crypto.subtle.importKey("raw",encoder.encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign","verify"])}
+export async function createDemoSession(role:PowerChainRole){const payload=JSON.stringify({role,sub:`demo-${role}`,exp:Date.now()+8*60*60*1000});const encoded=Buffer.from(payload).toString("base64url");const sig=await crypto.subtle.sign("HMAC",await key(process.env.DEMO_SESSION_SECRET||"dev-demo-secret"),encoder.encode(encoded));return `${encoded}.${base64url(sig)}`}
+export async function verifyDemoSession(token?:string|null){if(!token)return null;const [encoded,signature]=token.split(".");if(!encoded||!signature)return null;const ok=await crypto.subtle.verify("HMAC",await key(process.env.DEMO_SESSION_SECRET||"dev-demo-secret"),Buffer.from(signature,"base64url"),encoder.encode(encoded));if(!ok)return null;const payload=JSON.parse(Buffer.from(encoded,"base64url").toString("utf8"));if(payload.exp<Date.now())return null;return payload as {role:PowerChainRole;sub:string;exp:number}}

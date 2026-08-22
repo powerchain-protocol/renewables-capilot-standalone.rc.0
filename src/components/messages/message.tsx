@@ -1,3 +1,0 @@
-import { Avatar } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-export function Message({role,content,provider}:{role:"user"|"assistant";content:string;provider?:string}){return <Card className={`p-4 ${role==="user"?"ml-auto max-w-[85%] bg-[var(--muted)]":"max-w-[95%]"}`}><div className="flex gap-3"><Avatar name={role==="assistant"?"GRIDLLM":"You"} className="size-8"/><div className="min-w-0 flex-1"><div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--muted-foreground)]">{role==="assistant"?"GRIDLLM":"You"}{provider?` · ${provider}`:""}</div><div className="whitespace-pre-wrap text-sm leading-6">{content||"…"}</div></div></div></Card>}

@@ -1,3 +1,0 @@
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-export function PowerChainLogo({ compact=false, className }: { compact?: boolean; className?: string }) { return <div className={cn("flex items-center gap-3",className)}><Image src="/brand/logo-green.png" alt="PowerChain" width={44} height={44} className="size-10 object-contain dark:hidden"/><Image src="/brand/logo-white.png" alt="PowerChain" width={44} height={44} className="hidden size-10 object-contain dark:block"/>{!compact && <div><div className="text-[15px] font-black tracking-[.08em]">POWERCHAIN</div><div className="text-[10px] text-[var(--muted-foreground)]">The Energy Value Network</div></div>}</div>; }

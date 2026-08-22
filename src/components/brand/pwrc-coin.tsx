@@ -1,2 +1,0 @@
-import Image from "next/image";
-export function PwrcCoin({ size=70 }: { size?: number }) { return <div style={{width:size,height:size}} className="relative overflow-hidden rounded-full border border-amber-500/50 bg-gradient-to-br from-amber-200 via-amber-500 to-amber-800 p-[3px] shadow-[0_10px_35px_rgba(146,98,22,.22)]"><div className="flex size-full items-center justify-center rounded-full border border-white/30 bg-[#063f30]"><Image src="/brand/logo-white.png" alt="PWRC" width={Math.round(size*.58)} height={Math.round(size*.58)} className="object-contain"/></div></div>; }

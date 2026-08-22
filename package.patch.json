@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "dev:web": "pnpm --filter @powerchain/web dev",
+    "dev:copilot": "pnpm --filter @powerchain/copilot dev",
+    "dev:backend": "pnpm --filter @powerchain/backend dev",
+    "dev:apps": "pnpm --parallel --filter @powerchain/web --filter @powerchain/copilot --filter @powerchain/backend dev",
+    "build:apps": "pnpm --filter @powerchain/backend build && pnpm --filter @powerchain/web build && pnpm --filter @powerchain/copilot build"
+  }
+}

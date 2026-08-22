@@ -1,0 +1,5 @@
+name = "powerchain-web"
+compatibility_date = "2026-08-22"
+compatibility_flags = ["nodejs_compat"]
+[vars]
+NEXT_TELEMETRY_DISABLED = "1"
