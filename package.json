@@ -1,30 +1,3 @@
 {
-  "name": "powerchain-renewables-workspace",
-  "version": "1.0.0",
-  "private": true,
-  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621",
-  "engines": {
-    "node": ">=24.19.0 <25"
-  },
-  "scripts": {
-    "dev": "pnpm --filter @powerchain/copilot dev",
-    "build": "pnpm --filter @powerchain/copilot build && pnpm --filter @powerchain/web build",
-    "start": "pnpm --filter @powerchain/copilot start",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "validate": "pnpm --filter @powerchain/copilot validate && pnpm --filter @powerchain/web validate",
-    "prisma:generate": "pnpm --filter @powerchain/copilot prisma:generate && pnpm --filter @powerchain/web prisma:generate",
-    "prisma:validate": "pnpm --filter @powerchain/copilot prisma:validate && pnpm --filter @powerchain/web prisma:validate",
-    "db:migrate": "pnpm --filter @powerchain/copilot db:migrate",
-    "db:seed": "pnpm --filter @powerchain/copilot db:seed",
-    "config:doctor": "pnpm --filter @powerchain/copilot config:doctor",
-    "security:check": "pnpm --filter @powerchain/copilot security:check",
-    "dev:copilot": "pnpm --filter @powerchain/copilot dev",
-    "dev:web": "pnpm --filter @powerchain/web dev",
-    "build:web": "pnpm --filter @powerchain/web build",
-    "typecheck:web": "pnpm --filter @powerchain/web typecheck",
-    "prisma:generate:web": "pnpm --filter @powerchain/web prisma:generate",
-    "prisma:validate:web": "pnpm --filter @powerchain/web prisma:validate",
-    "db:migrate:web": "pnpm --filter @powerchain/web db:migrate",
-    "start:web": "pnpm --filter @powerchain/web start"
-  }
+  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621"
 }

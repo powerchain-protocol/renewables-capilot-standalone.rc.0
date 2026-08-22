@@ -1,9 +1,24 @@
 {
   "scripts": {
-    "dev:web": "pnpm --filter @powerchain/web dev",
-    "dev:copilot": "pnpm --filter @powerchain/copilot dev",
-    "dev:backend": "pnpm --filter @powerchain/backend dev",
-    "dev:apps": "pnpm --parallel --filter @powerchain/web --filter @powerchain/copilot --filter @powerchain/backend dev",
-    "build:apps": "pnpm --filter @powerchain/backend build && pnpm --filter @powerchain/web build && pnpm --filter @powerchain/copilot build"
+    "workspace:doctor": "node scripts/powerchain-workspace.mjs doctor",
+    "prisma:generate": "node scripts/powerchain-workspace.mjs prisma",
+    "config:doctor": "node scripts/powerchain-workspace.mjs config",
+    "peers:check": "node scripts/powerchain-workspace.mjs peers",
+    "typecheck": "node scripts/powerchain-workspace.mjs typecheck",
+    "dev:web": "node scripts/powerchain-workspace.mjs dev web",
+    "dev:copilot": "node scripts/powerchain-workspace.mjs dev copilot",
+    "dev:backend": "node scripts/powerchain-workspace.mjs dev backend",
+    "dev:apps": "node scripts/powerchain-workspace.mjs dev",
+    "build:web": "node scripts/powerchain-workspace.mjs build web",
+    "build:copilot": "node scripts/powerchain-workspace.mjs build copilot",
+    "build:backend": "node scripts/powerchain-workspace.mjs build backend",
+    "build:apps": "node scripts/powerchain-workspace.mjs build",
+    "clean:next": "node scripts/clean-app-caches.mjs",
+    "dev:reset": "pnpm clean:next && pnpm dev:apps",
+    "predev": "node scripts/powerchain-workspace.mjs preflight",
+    "dev": "node scripts/powerchain-workspace.mjs dev",
+    "ports:check": "node scripts/powerchain-workspace.mjs ports",
+    "install:verified": "pnpm install --no-frozen-lockfile",
+    "overlay:verify": "node scripts/verify-installed.mjs"
   }
 }

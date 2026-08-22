@@ -6,6 +6,14 @@
 | Copilot | 3001 | https://copilot.powerchain.app |
 | Backend | 3002 | https://api.powerchain.app |
 
-Preferred order: Vercel → Cloudflare → AWS. Hostinger and Firebase are emergency/surface-specific options.
+Preferred order: **Vercel → Cloudflare → AWS**. Hostinger and Firebase remain emergency/surface-specific options.
 
-Never put multiple URLs in one environment variable. Use `*_URL` for production and `*_LOCAL_URL` for local development. `NODE_ENV=development` is the valid value; `developemnt` is invalid. `http://` is valid; `http;//` is invalid.
+- Vercel: primary Next.js deployment.
+- Cloudflare: warm standby using the current OpenNext Workers adapter.
+- AWS: emergency full-stack target through standalone containers / managed Node hosting.
+- Hostinger: emergency Web/Copilot Node deployment where supported.
+- Firebase: emergency Web-only App Hosting target. Next.js versions newer than Firebase's active support line require explicit validation before promotion.
+
+DNS failover should retain the canonical PowerChain hostnames rather than changing application URLs during an incident.
+
+Never put multiple URLs in one environment variable. `NODE_ENV=development` is valid; `developemnt` is not. `http://` is valid; `http;//` is not.

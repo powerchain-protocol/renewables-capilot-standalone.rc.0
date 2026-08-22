@@ -1,10 +1,32 @@
-# Routing
+# PowerChain application routing
 
-1. Browser opens Web on port 3000 / `web.powerchain.app`.
-2. Get Started opens the sign-in flow.
-3. Better Auth or an explicitly enabled Demo session resolves a role.
-4. Successful access redirects to Copilot `/dashboard` on port 3001.
-5. Copilot proxy never intercepts `_next`, manifest or health routes.
-6. Shared control-plane services are exposed from Backend on port 3002.
+## Canonical topology
 
-Balances, Tokens, Field/PWA and Integrations are dashboard resource panels, not separate shells by default.
+| Surface | Local | Production |
+|---|---|---|
+| Web | `http://localhost:3000` | `https://web.powerchain.app` |
+| Copilot | `http://localhost:3001` | `https://copilot.powerchain.app` |
+| Backend | `http://localhost:3002` | `https://api.powerchain.app` |
+
+Environment resolution is mode-aware: development prefers `*_LOCAL_URL`; production prefers `*_URL`. Do not store two URLs in one environment variable.
+
+## Authenticated flow
+
+1. User opens Web.
+2. User signs in or chooses an enabled Demo role.
+3. Better Auth/session state is established.
+4. User is redirected to Copilot `/dashboard`.
+5. Copilot verifies the session through Backend `/api/v1/session`.
+6. Role capabilities are evaluated server-side.
+
+Production account sessions are shared across the trusted `*.powerchain.app` subdomains through Better Auth cross-subdomain cookies.
+
+## Roles
+
+- `admin`
+- `operator`
+- `analyst`
+- `viewer`
+- `demo`
+
+Demo access is read-oriented and does not acquire wallet signing authority.
