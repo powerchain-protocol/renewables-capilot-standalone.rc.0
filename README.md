@@ -63,37 +63,22 @@ Production Better Auth sessions use a shared `.powerchain.app` cookie domain so 
 - Next.js is patched to `16.3.2` for Web, Copilot and Backend.
 
 
-## Clone and bootstrap
+## Bootstrap / repair the target root
 
-Start from the canonical GitHub repository rather than a machine-specific local path:
+If commands such as `pnpm workspace:doctor`, `pnpm prisma:generate`, `pnpm config:doctor`, `pnpm peers:check`, `pnpm typecheck`, `pnpm build:apps`, or `pnpm dev:apps` report **Command not found**, the overlay has been extracted but its root package patch has not been installed into the target repository.
+
+From the directory that contains `powerchain-routing-backend-overlay/`, run:
 
 ```bash
-git clone https://github.com/powerchain-protocol/powerchain-capilot.git
-cd powerchain-capilot
+node powerchain-routing-backend-overlay/bootstrap.mjs \
+  git clone github.com/powerchain-protocol/powerchain-capilot
 ```
 
-If `powerchain-routing-backend-overlay/` is extracted next to the cloned repository, bootstrap the current repository root with:
+The bootstrap now fails if `package.json` cannot be patched and verifies all required root lifecycle commands before returning success. Then run:
 
 ```bash
-node ../powerchain-routing-backend-overlay/bootstrap.mjs .
-```
-
-If the overlay directory is inside the cloned repository instead, use:
-
-```bash
-node powerchain-routing-backend-overlay/bootstrap.mjs .
-```
-
-The bootstrap fails if `package.json` cannot be patched and verifies all required root lifecycle commands before returning success. Do not run the lifecycle sequence before bootstrap reports `PASS`.
-
-Then run from `powerchain-capilot/`:
-
-```bash
-corepack enable
-corepack use pnpm@11.22.0
-pnpm install --no-frozen-lockfile
-
 pnpm overlay:verify
+pnpm install --no-frozen-lockfile
 pnpm workspace:doctor
 pnpm prisma:generate
 pnpm config:doctor
@@ -103,15 +88,33 @@ pnpm build:apps
 pnpm dev:apps
 ```
 
-## Apply without bootstrap
+Do not run the lifecycle sequence before bootstrap reports `PASS`.
 
-If you intentionally want to apply only the overlay patch, run from the cloned repository root:
+## Apply
 
 ```bash
-node ../powerchain-routing-backend-overlay/scripts/apply-overlay.mjs .
+node scripts/apply-overlay.mjs /Users/miko/github/powerchain/renewables-capilot-standalone.rc.0
 ```
 
-The apply script updates `pnpm-workspace.yaml` itself; there is no manual YAML merge step. Bootstrap is still preferred because it verifies the root lifecycle scripts after applying the patch.
+The apply script now updates `pnpm-workspace.yaml` itself; there is no manual YAML merge step.
+
+Then run:
+
+```bash
+cd /Users/miko/github/powerchain/renewables-capilot-standalone.rc.0
+
+corepack enable
+corepack use pnpm@11.22.0
+pnpm install --no-frozen-lockfile
+
+pnpm workspace:doctor
+pnpm prisma:generate
+pnpm config:doctor
+pnpm peers:check
+pnpm typecheck
+pnpm build:apps
+pnpm dev:apps
+```
 
 If a Turbopack development session starts returning 404 for routes that previously existed:
 
