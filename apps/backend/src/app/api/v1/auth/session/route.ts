@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { resolveRole } from "@powerchain/authz";
+import { POWERCHAIN_ROLES, isPowerChainRole, resolveRole } from "@powerchain/auth";
 import { WEB_URL } from "@/lib/urls";
 
 export const dynamic = "force-dynamic";
 
 const sessionSchema = z.object({
   authenticated: z.boolean(),
-  role: z.string().optional(),
+  role: z.enum(POWERCHAIN_ROLES).optional(),
   kind: z.string().optional(),
   status: z.string().optional(),
   user: z.object({
@@ -17,7 +17,7 @@ const sessionSchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const response = await fetch(`${WEB_URL}/api/v1/authz/session`, {
+  const response = await fetch(`${WEB_URL}/api/v1/auth/session`, {
     headers: { cookie: request.headers.get("cookie") ?? "" },
     cache: "no-store",
   }).catch(() => null);
@@ -32,8 +32,6 @@ export async function GET(request: Request) {
   }
 
   const payload = parsed.data;
-  return Response.json(
-    { ...payload, role: payload.role ?? resolveRole(payload.user?.email) },
-    { headers: { "cache-control": "no-store" } },
-  );
+  const role = isPowerChainRole(payload.role) ? payload.role : resolveRole(payload.user?.email);
+  return Response.json({ ...payload, role }, { headers: { "cache-control": "no-store" } });
 }

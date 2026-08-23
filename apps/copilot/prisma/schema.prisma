@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CopilotUser {
+  id          String               @id
+  email       String?              @unique
+  displayName String?              @map("display_name")
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  memberships CopilotMembership[]
+  chats       CopilotChat[]
+  reports     CopilotReport[]
+
+  @@map("copilot_users")
+}
+
+model CopilotOrganization {
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  memberships CopilotMembership[]
+  chats       CopilotChat[]
+  reports     CopilotReport[]
+
+  @@map("copilot_organizations")
+}
+
+model CopilotMembership {
+  id             String               @id @default(cuid())
+  userId         String               @map("user_id")
+  organizationId String               @map("organization_id")
+  role           String               @default("viewer")
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  user           CopilotUser          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   CopilotOrganization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
+  @@map("copilot_memberships")
+}
+
+model CopilotChat {
+  id             String               @id @default(cuid())
+  userId         String               @map("user_id")
+  organizationId String               @map("organization_id")
+  title          String               @default("New conversation")
+  status         String               @default("active")
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user           CopilotUser          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   CopilotOrganization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages       CopilotMessage[]
+
+  @@index([organizationId, updatedAt(sort: Desc)])
+  @@index([userId, updatedAt(sort: Desc)])
+  @@map("copilot_chats")
+}
+
+model CopilotMessage {
+  id        String      @id @default(cuid())
+  chatId    String      @map("chat_id")
+  role      String
+  content   String
+  provider  String?
+  model     String?
+  metadata  Json        @default("{}")
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  chat      CopilotChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId, createdAt])
+  @@map("copilot_messages")
+}
+
+model CopilotReport {
+  id             String               @id @default(cuid())
+  userId         String               @map("user_id")
+  organizationId String               @map("organization_id")
+  chatId         String?              @map("chat_id")
+  title          String
+  kind           String               @default("analysis")
+  content        Json
+  provenance     Json                 @default("{}")
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user           CopilotUser          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   CopilotOrganization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("copilot_reports")
+}
+
+model CopilotRun {
+  id             String   @id @default(cuid())
+  chatId         String?  @map("chat_id")
+  requestId      String   @map("request_id")
+  provider       String
+  model          String?
+  mode           String
+  status         String   @default("started")
+  evidenceState  String?  @map("evidence_state")
+  metadata       Json     @default("{}")
+  startedAt      DateTime @default(now()) @map("started_at") @db.Timestamptz(6)
+  completedAt    DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  @@index([requestId])
+  @@index([chatId, startedAt(sort: Desc)])
+  @@map("copilot_runs")
+}
+
+model CopilotCreditLedger {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  amount    Int
+  kind      String
+  reference String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("copilot_credit_ledger")
+}

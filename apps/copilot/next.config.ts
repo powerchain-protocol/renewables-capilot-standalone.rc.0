@@ -11,6 +11,7 @@ const securityHeaders = [
 const config: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  transpilePackages: ["@powerchain/auth"],
   output: "standalone",
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];

@@ -100,8 +100,34 @@ async function doctor() {
     const scripts = ["dev", "build", "typecheck"].filter((name) => pkg.scripts?.[name]);
     const next = pkg.dependencies?.next ?? pkg.devDependencies?.next ?? "not declared";
     console.log(`${app.id.padEnd(8)} ${String(pkg.name ?? "unnamed").padEnd(36)} port ${app.port} · Next ${next} · ${scripts.join(", ") || "no lifecycle scripts"}`);
-    if (!pkg.scripts?.dev || !pkg.scripts?.build) fail(`${app.dir} must define dev and build scripts`);
+    if (next !== NEXT_VERSION) fail(`${app.dir} must use Next ${NEXT_VERSION}; found ${next}`);
+    if (!pkg.scripts?.dev || !pkg.scripts?.build || !pkg.scripts?.typecheck) fail(`${app.dir} must define dev, build and typecheck scripts`);
+    if (pkg.dependencies?.["@powerchain/auth"] !== "workspace:*") fail(`${app.dir} must depend on @powerchain/auth workspace:*`);
+    for (const dependency of ["@prisma/client", "@supabase/supabase-js"]) {
+      if (!pkg.dependencies?.[dependency]) fail(`${app.dir} missing default persistence dependency ${dependency}`);
+    }
+    if (!pkg.devDependencies?.["@types/node"]) fail(`${app.dir} missing @types/node; process/Node globals may fail in next.config.ts or proxy.ts`);
+    for (const requiredFile of ["tsconfig.json", "next-env.d.ts", "next.config.ts", "proxy.ts"]) {
+      if (!existsSync(resolve(root, app.dir, requiredFile))) fail(`${app.dir}/${requiredFile} missing`);
+    }
+    const tsconfigFile = resolve(root, app.dir, "tsconfig.json");
+    if (existsSync(tsconfigFile)) {
+      try {
+        const tsconfig = JSON.parse(readFileSync(tsconfigFile, "utf8"));
+        const compiler = tsconfig.compilerOptions || {};
+        if (compiler.moduleResolution !== "bundler") fail(`${app.dir}/tsconfig.json must use moduleResolution=bundler for Next.js`);
+        if (!Array.isArray(compiler.plugins) || !compiler.plugins.some((plugin) => plugin?.name === "next")) fail(`${app.dir}/tsconfig.json missing Next.js TypeScript plugin`);
+        const include = Array.isArray(tsconfig.include) ? tsconfig.include : [];
+        if (!include.includes("*.ts")) fail(`${app.dir}/tsconfig.json should include root TypeScript files such as proxy.ts and next.config.ts`);
+      } catch (error) {
+        fail(`${app.dir}/tsconfig.json is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
   }
+  const authPackage = resolve(root, "packages/auth/package.json");
+  if (!existsSync(authPackage)) fail("packages/auth/package.json missing");
+  else if (JSON.parse(readFileSync(authPackage, "utf8")).name !== "@powerchain/auth") fail("packages/auth must be named @powerchain/auth");
+  if (existsSync(resolve(root, "packages/authz"))) fail("legacy packages/authz must be removed; rerun overlay bootstrap");
   checkWorkspaceFile();
   if (!process.exitCode) console.log("\nWorkspace contract: PASS");
 }
@@ -111,7 +137,7 @@ async function preflight(target) {
   await ports(target, { failWhenBusy: true });
 }
 async function prisma() {
-  for (const app of [APPS[1], APPS[0]]) {
+  for (const app of [APPS[2], APPS[1], APPS[0]]) {
     const schema = resolve(root, app.dir, "prisma/schema.prisma");
     if (!existsSync(schema)) { note(`skip prisma: ${app.id} has no schema`); continue; }
     const pkg = packageFor(app);
@@ -119,6 +145,17 @@ async function prisma() {
     else { console.log(`\n[powerchain] prisma generate: ${app.id}`); await run("pnpm", ["--dir", app.dir, "exec", "prisma", "generate"]); }
   }
 }
+
+async function prismaValidate() {
+  for (const app of [APPS[2], APPS[1], APPS[0]]) {
+    const schema = resolve(root, app.dir, "prisma/schema.prisma");
+    if (!existsSync(schema)) { note(`skip prisma validate: ${app.id} has no schema`); continue; }
+    const pkg = packageFor(app);
+    if (pkg?.scripts?.["prisma:validate"]) await runApp(app, "prisma:validate");
+    else { console.log(`\n[powerchain] prisma validate: ${app.id}`); await run("pnpm", ["--dir", app.dir, "exec", "prisma", "validate"]); }
+  }
+}
+
 async function config() {
   const app = APPS[1];
   const pkg = packageFor(app);
@@ -127,6 +164,9 @@ async function config() {
   await doctor();
 }
 async function typecheck() {
+  await doctor();
+  if (process.exitCode) throw new Error("Workspace doctor failed");
+  await prisma();
   note("recursive workspace typecheck");
   await run("pnpm", ["-r", "--if-present", "typecheck"]);
 }
@@ -137,14 +177,21 @@ async function peers() {
   if (!existsSync(lockfile)) throw new Error("pnpm-lock.yaml is missing; run pnpm install first");
   const lock = readFileSync(lockfile, "utf8");
   if (/utf-8-validate@6\./.test(lock)) throw new Error("Lockfile still contains utf-8-validate 6.x; run pnpm install --no-frozen-lockfile after applying the overlay");
-  if (!/utf-8-validate@5\.0\.10/.test(lock)) throw new Error("Lockfile does not contain utf-8-validate@5.0.10");
-  console.log("Peer compatibility policy: PASS (utf-8-validate 5.0.10; ws@7/ws@8 compatible range)");
+  const hasUtf8 = /utf-8-validate@/.test(lock);
+  if (hasUtf8 && !/utf-8-validate@5\.0\.10/.test(lock)) throw new Error("Lockfile contains utf-8-validate but not the vetted 5.0.10 compatibility version");
+  console.log(`Peer compatibility policy: PASS (${hasUtf8 ? "utf-8-validate 5.0.10" : "utf-8-validate not present"}; workspace policy retained)`);
 }
 async function build(target) {
+  await doctor();
+  if (process.exitCode) throw new Error("Workspace doctor failed");
+  await prisma();
   const order = target ? selected(target) : [APPS[2], APPS[0], APPS[1]];
   for (const app of order) await runApp(app, "build");
 }
 async function dev(target) {
+  await doctor();
+  if (process.exitCode) throw new Error("Workspace doctor failed");
+  await prisma();
   await ports(target, { failWhenBusy: true });
   const apps = selected(target);
   if (apps.length === 1) return runApp(apps[0], "dev");
@@ -167,17 +214,57 @@ async function dev(target) {
   if (code) throw new Error(`one or more dev servers exited with ${code}`);
 }
 
+async function start(target) {
+  await doctor();
+  if (process.exitCode) throw new Error("Workspace doctor failed");
+  const apps = selected(target);
+  if (apps.length === 1) return runApp(apps[0], "start");
+  note("starting production servers: Web :3000 · Copilot :3001 · Backend :3002");
+  const children = apps.map((app) => {
+    const pkg = packageFor(app);
+    if (!pkg?.scripts?.start) throw new Error(`${app.dir} has no start script`);
+    return spawn("pnpm", ["--dir", app.dir, "run", "start"], { cwd: root, stdio: "inherit", env: process.env });
+  });
+  const stop = (signal) => { for (const child of children) if (!child.killed) child.kill(signal); };
+  process.on("SIGINT", () => stop("SIGINT"));
+  process.on("SIGTERM", () => stop("SIGTERM"));
+  const code = await new Promise((resolvePromise) => {
+    let remaining = children.length; let firstFailure = 0;
+    for (const child of children) child.on("exit", (exitCode) => {
+      if (exitCode && !firstFailure) { firstFailure = exitCode; stop("SIGTERM"); }
+      remaining -= 1; if (remaining === 0) resolvePromise(firstFailure);
+    });
+  });
+  if (code) throw new Error(`one or more production servers exited with ${code}`);
+}
+
+
+async function validateWorkspace() {
+  await doctor();
+  if (process.exitCode) throw new Error("Workspace doctor failed");
+  await run(process.execPath, ["scripts/env-doctor.mjs"]);
+  await prisma();
+  await prismaValidate();
+  await peers();
+  note("recursive workspace typecheck");
+  await run("pnpm", ["-r", "--if-present", "typecheck"]);
+  console.log("\nPowerChain validation: PASS");
+}
+
 const [command = "doctor", target] = process.argv.slice(2);
 try {
   if (command === "doctor") await doctor();
   else if (command === "preflight") await preflight(target);
   else if (command === "ports") await ports(target);
   else if (command === "prisma") await prisma();
+  else if (command === "prisma-validate") await prismaValidate();
   else if (command === "config") await config();
   else if (command === "peers") await peers();
   else if (command === "typecheck") await typecheck();
+  else if (command === "validate") await validateWorkspace();
   else if (command === "build") await build(target);
   else if (command === "dev") await dev(target);
+  else if (command === "start") await start(target);
   else throw new Error(`Unknown workspace command '${command}'`);
 } catch (error) {
   console.error(`\n[powerchain] ${error instanceof Error ? error.message : String(error)}`);

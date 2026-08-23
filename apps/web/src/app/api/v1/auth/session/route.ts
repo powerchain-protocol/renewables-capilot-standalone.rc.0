@@ -1,5 +1,5 @@
 import { cookies, headers } from "next/headers";
-import { resolveRole } from "@powerchain/authz";
+import { resolveRole } from "@powerchain/auth";
 import { verifyDemoSession } from "@/lib/auth/demo-session";
 export const dynamic="force-dynamic";
 export async function GET(){

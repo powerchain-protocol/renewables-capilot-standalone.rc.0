@@ -9,6 +9,7 @@ const defaultTarget = resolve(overlayRoot, "..", "powerchain-capilot");
 const requested = process.argv.find((arg) => !arg.startsWith("--") && arg !== process.argv[0] && arg !== process.argv[1]);
 const target = resolve(requested || defaultTarget);
 const install = process.argv.includes("--install");
+const build = process.argv.includes("--build");
 
 function fail(message) {
   console.error(`\n[powerchain-setup] ${message}`);
@@ -40,7 +41,7 @@ if (realpathSync(target) === realpathSync(overlayRoot)) {
 run(process.execPath, [resolve(overlayRoot, "bootstrap.mjs"), target], { cwd: overlayRoot });
 
 const pkg = JSON.parse(readFileSync(packageFile, "utf8"));
-const required = ["overlay:verify", "workspace:doctor", "prisma:generate", "config:doctor", "peers:check", "typecheck", "build:apps", "dev:apps"];
+const required = ["setup", "upgrade", "fix", "doctor", "overlay:verify", "workspace:doctor", "env:doctor", "prisma:generate", "prisma:validate", "config:doctor", "peers:check", "typecheck", "build:apps", "dev:apps", "start:apps", "check", "ci"];
 const missing = required.filter((name) => !pkg.scripts?.[name]);
 if (missing.length) fail(`Setup verification failed; missing root scripts: ${missing.join(", ")}`);
 
@@ -53,6 +54,12 @@ if (install) {
   run("pnpm", ["install", "--no-frozen-lockfile"], { cwd: target });
   run("pnpm", ["overlay:verify"], { cwd: target });
   run("pnpm", ["workspace:doctor"], { cwd: target });
+  run("pnpm", ["prisma:generate"], { cwd: target });
+  run("pnpm", ["prisma:validate"], { cwd: target });
+  run("pnpm", ["config:doctor"], { cwd: target });
+  run("pnpm", ["peers:check"], { cwd: target });
+  run("pnpm", ["typecheck"], { cwd: target });
+  if (build) run("pnpm", ["build:apps"], { cwd: target });
 } else {
   console.log("\nNext:");
   console.log("  corepack enable");
@@ -61,9 +68,11 @@ if (install) {
   console.log("  pnpm overlay:verify");
   console.log("  pnpm workspace:doctor");
   console.log("  pnpm prisma:generate");
+  console.log("  pnpm prisma:validate");
   console.log("  pnpm config:doctor");
   console.log("  pnpm peers:check");
   console.log("  pnpm typecheck");
+  console.log("  pnpm check");
   console.log("  pnpm build:apps");
   console.log("  pnpm dev:apps");
 }

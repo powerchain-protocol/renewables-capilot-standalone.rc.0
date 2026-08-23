@@ -33,22 +33,47 @@ if (apply.status !== 0) fail(`Overlay application failed with exit code ${apply.
 
 const pkg = JSON.parse(readFileSync(targetPackage, "utf8"));
 const requiredScripts = [
+  "setup",
+  "upgrade",
+  "fix",
+  "doctor",
   "overlay:verify",
   "workspace:doctor",
+  "env:doctor",
   "prisma:generate",
+  "prisma:validate",
   "config:doctor",
   "peers:check",
   "typecheck",
   "build:apps",
   "dev:apps",
+  "start:apps",
+  "check",
+  "ci",
 ];
 const missing = requiredScripts.filter((name) => !pkg.scripts?.[name]);
 if (missing.length) fail(`Root package.json patch verification failed. Missing scripts: ${missing.join(", ")}`);
 
 for (const file of [
+  "scripts/monorepo-installer.mjs",
+  "scripts/env-doctor.mjs",
+  ".nvmrc",
+  ".node-version",
+  ".github/workflows/ci.yml",
   "scripts/powerchain-workspace.mjs",
   "scripts/clean-app-caches.mjs",
+  "apps/web/README.md",
+  "apps/copilot/README.md",
+  "apps/backend/README.md",
   "apps/backend/package.json",
+  "apps/backend/prisma/schema.prisma",
+  "apps/backend/supabase/migrations/0001_backend_audit_events.sql",
+  "apps/web/src/app/api/v1/auth/session/route.ts",
+  "apps/backend/src/app/api/v1/auth/session/route.ts",
+  "apps/web/scripts/ensure-prisma.mjs",
+  "apps/copilot/scripts/ensure-prisma.mjs",
+  "apps/backend/scripts/ensure-prisma.mjs",
+  "packages/auth/package.json",
   "pnpm-workspace.yaml",
 ]) {
   if (!existsSync(resolve(target, file))) fail(`Required overlay output missing after apply: ${file}`);
@@ -59,14 +84,17 @@ console.log(`Installed root commands: ${requiredScripts.join(", ")}`);
 console.log("\nRepository root:");
 console.log(`  ${target}`);
 console.log("\nNext (run from that repository root):");
-console.log("  pnpm overlay:verify");
 console.log("  corepack enable");
 console.log("  corepack use pnpm@11.22.0");
 console.log("  pnpm install --no-frozen-lockfile");
+console.log("  pnpm overlay:verify");
 console.log("  pnpm workspace:doctor");
 console.log("  pnpm prisma:generate");
+console.log("  pnpm prisma:validate");
 console.log("  pnpm config:doctor");
 console.log("  pnpm peers:check");
 console.log("  pnpm typecheck");
+console.log("  pnpm check");
 console.log("  pnpm build:apps");
 console.log("  pnpm dev:apps");
+console.log("  # future maintenance: pnpm setup | pnpm upgrade | pnpm fix | pnpm doctor");

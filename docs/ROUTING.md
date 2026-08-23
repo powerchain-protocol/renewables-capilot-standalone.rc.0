@@ -13,10 +13,10 @@ Environment resolution is mode-aware: development prefers `*_LOCAL_URL`; product
 ## Authenticated flow
 
 1. User opens Web.
-2. User signs in or chooses an enabled Demo role.
+2. User signs in or opens the dedicated read-only Demo account.
 3. Better Auth/session state is established.
 4. User is redirected to Copilot `/dashboard`.
-5. Copilot verifies the session through Backend `/api/v1/session`.
+5. Copilot verifies the session through Backend `/api/v1/auth/session`.
 6. Role capabilities are evaluated server-side.
 
 Production account sessions are shared across the trusted `*.powerchain.app` subdomains through Better Auth cross-subdomain cookies.
