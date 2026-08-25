@@ -1,6 +1,0 @@
-import { Suspense } from "react";
-import { WorkspaceHeader } from "@/components/workspace/workspace-header";
-import { RightSidebar } from "@/components/workspace/right-sidebar";
-import { DashboardPanelCard } from "@/components/workspace/dashboard-panel-card";
-import { requireRole } from "@/lib/auth/require-role";
-export default async function Dashboard(){const session=await requireRole("copilot.access");return <main className="flex h-dvh overflow-hidden bg-[#f6f8f7] dark:bg-[#080b09]"><section className="min-w-0 flex-1 overflow-hidden"><WorkspaceHeader role={session.role}/><div className="h-[calc(100dvh-64px)] overflow-y-auto p-5"><div className="mx-auto max-w-6xl rounded-2xl border bg-white p-6 dark:border-white/10 dark:bg-[#0d110f]"><p className="text-xs font-semibold uppercase tracking-[.08em] text-emerald-700">AI workspace</p><h1 className="mt-2 text-2xl font-semibold">Renewables Copilot dashboard</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-black/55 dark:text-white/55">Context controls were removed from the shell. Use the branded network/data-mode/period selectors above; Balances, Tokens, Field/PWA and Integrations open as dashboard panels.</p></div></div></section><RightSidebar/><Suspense><DashboardPanelCard/></Suspense></main>}

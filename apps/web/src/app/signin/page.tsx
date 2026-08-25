@@ -1,5 +1,0 @@
-import { Suspense } from "react";
-import { SignInForm } from "@/auth/forms/sign-in-form";
-import { DemoAccountCard } from "@/components/auth/demo-account-card";
-import { Card } from "@/components/ui/card";
-export default function SignInPage(){return <main className="grid min-h-[70vh] place-items-center bg-[#f7f9f8] px-5 py-14 dark:bg-[#090c0a]"><div className="w-full max-w-md"><Card className="p-6 sm:p-7"><div className="text-xs font-semibold uppercase tracking-[.08em] text-emerald-700">PowerChain access</div><h1 className="mt-2 text-2xl font-semibold tracking-[-.03em]">Sign in to Renewables Copilot</h1><p className="mb-6 mt-2 text-sm leading-6 text-black/55 dark:text-white/55">Website first, authenticated workspace second. After sign-in you continue to the Copilot dashboard on port 3001.</p><Suspense><SignInForm/></Suspense><div className="my-5 flex items-center gap-3 text-[11px] text-black/35 dark:text-white/35"><span className="h-px flex-1 bg-black/10 dark:bg-white/10"/>or<span className="h-px flex-1 bg-black/10 dark:bg-white/10"/></div><DemoAccountCard/></Card></div></main>}

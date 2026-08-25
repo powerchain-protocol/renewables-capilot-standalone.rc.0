@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../packages/database/generated/prisma"
+}
+datasource db { provider = "postgresql" }
+
+enum ClientType { PROSUMER CONSUMER RENEWABLE_PROVIDER OPERATOR ADMIN }
+enum AssetType { SOLAR WIND BATTERY HYDRO EV_CHARGING OTHER }
+enum AssetStatus { PLANNED COMMISSIONING ACTIVE ATTENTION OFFLINE RETIRED }
+
+model UserProfile {
+  id String @id @default(cuid())
+  clerkUserId String @unique @map("clerk_user_id")
+  displayName String? @map("display_name")
+  email String?
+  onboardingComplete Boolean @default(false) @map("onboarding_complete")
+  memberships Membership[]
+  wallets WalletAccount[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("user_profiles")
+}
+model Organization {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  clientType ClientType @map("client_type")
+  memberships Membership[]
+  assets RenewableAsset[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("organizations")
+}
+model Membership {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  organizationId String @map("organization_id")
+  role ClientType
+  user UserProfile @relation(fields:[userId], references:[id], onDelete:Cascade)
+  organization Organization @relation(fields:[organizationId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([userId, organizationId])
+  @@index([organizationId, role])
+  @@map("memberships")
+}
+model WalletAccount {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  chain String @default("solana")
+  address String
+  verifiedAt DateTime? @map("verified_at")
+  user UserProfile @relation(fields:[userId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([chain, address])
+  @@index([userId])
+  @@map("wallet_accounts")
+}
+model RenewableAsset {
+  id String @id @default(cuid())
+  organizationId String @map("organization_id")
+  name String
+  type AssetType
+  status AssetStatus @default(PLANNED)
+  capacityKw Decimal @db.Decimal(18,6) @map("capacity_kw")
+  organization Organization @relation(fields:[organizationId], references:[id], onDelete:Cascade)
+  meters Meter[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([organizationId, status])
+  @@map("renewable_assets")
+}
+model Meter {
+  id String @id @default(cuid())
+  assetId String @map("asset_id")
+  externalId String @map("external_id")
+  asset RenewableAsset @relation(fields:[assetId], references:[id], onDelete:Cascade)
+  readings EnergyReading[]
+  @@unique([assetId, externalId])
+  @@map("meters")
+}
+model EnergyReading {
+  id BigInt @id @default(autoincrement())
+  meterId String @map("meter_id")
+  observedAt DateTime @map("observed_at") @db.Timestamptz(6)
+  energyWh BigInt @map("energy_wh")
+  powerW Decimal? @db.Decimal(20,6) @map("power_w")
+  verification String @default("VERIFIED")
+  meter Meter @relation(fields:[meterId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([meterId, observedAt])
+  @@index([meterId, observedAt(sort: Desc)])
+  @@map("energy_readings")
+}
+
+enum CopilotMessageRole { USER ASSISTANT SYSTEM TOOL }
+enum CopilotFeedbackRating { HELPFUL UNHELPFUL }
+enum CopilotCreditLedgerType { FUND RESERVE SETTLE RELEASE REVERSAL ADJUSTMENT EXPIRATION }
+enum CopilotCreditReservationStatus { RESERVED SETTLED RELEASED EXPIRED }
+enum TokenizedMessageReceiptStatus { RESERVED SETTLED REVERSED FAILED }
+
+model CopilotConversation {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  organizationId String @map("organization_id")
+  title String?
+  deletedAt DateTime? @map("deleted_at")
+  messages CopilotMessage[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([userId, organizationId, deletedAt])
+  @@map("copilot_conversations")
+}
+
+model CopilotMessage {
+  id String @id @default(cuid())
+  conversationId String @map("conversation_id")
+  role CopilotMessageRole
+  content String @db.Text
+  requestId String? @map("request_id")
+  provider String?
+  model String?
+  latencyMs Int? @map("latency_ms")
+  inputTokens Int? @map("input_tokens")
+  outputTokens Int? @map("output_tokens")
+  conversation CopilotConversation @relation(fields:[conversationId], references:[id], onDelete:Cascade)
+  feedback CopilotMessageFeedback?
+  tokenReceipt CopilotTokenizedMessageReceipt?
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([conversationId, createdAt])
+  @@index([requestId])
+  @@map("copilot_messages")
+}
+
+model CopilotMessageFeedback {
+  id String @id @default(cuid())
+  messageId String @unique @map("message_id")
+  userId String @map("user_id")
+  rating CopilotFeedbackRating
+  message CopilotMessage @relation(fields:[messageId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([userId, updatedAt])
+  @@map("copilot_message_feedback")
+}
+
+model CopilotSavedPrompt {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  promptId String @map("prompt_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([userId, promptId])
+  @@index([userId, createdAt])
+  @@map("copilot_saved_prompts")
+}
+
+model CopilotCreditAccount {
+  id String @id @default(cuid())
+  userId String @map("user_id")
+  organizationId String @map("organization_id")
+  asset String @default("PWRC")
+  assetDecimals Int @default(9) @map("asset_decimals")
+  availableAtomic BigInt @default(0) @map("available_atomic")
+  reservedAtomic BigInt @default(0) @map("reserved_atomic")
+  reservations CopilotCreditReservation[]
+  ledgerEntries CopilotCreditLedgerEntry[]
+  receipts CopilotTokenizedMessageReceipt[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@unique([userId, organizationId, asset])
+  @@index([organizationId, asset])
+  @@map("copilot_credit_accounts")
+}
+
+model CopilotCreditReservation {
+  id String @id @default(cuid())
+  accountId String @map("account_id")
+  requestId String @unique @map("request_id")
+  creditClass String @map("credit_class")
+  units Int
+  reservedAtomic BigInt @map("reserved_atomic")
+  settledAtomic BigInt @default(0) @map("settled_atomic")
+  priceUsdMicrosPerPwrc BigInt @map("price_usd_micros_per_pwrc")
+  pricingMode String @map("pricing_mode")
+  status CopilotCreditReservationStatus @default(RESERVED)
+  expiresAt DateTime @map("expires_at")
+  account CopilotCreditAccount @relation(fields:[accountId], references:[id], onDelete:Cascade)
+  ledgerEntries CopilotCreditLedgerEntry[]
+  receipt CopilotTokenizedMessageReceipt?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@index([accountId, status, expiresAt])
+  @@map("copilot_credit_reservations")
+}
+
+model CopilotCreditLedgerEntry {
+  id String @id @default(cuid())
+  accountId String @map("account_id")
+  reservationId String? @map("reservation_id")
+  type CopilotCreditLedgerType
+  amountAtomic BigInt @map("amount_atomic")
+  balanceAfterAtomic BigInt @map("balance_after_atomic")
+  referenceType String @map("reference_type")
+  referenceId String @map("reference_id")
+  idempotencyKey String @unique @map("idempotency_key")
+  metadata Json?
+  account CopilotCreditAccount @relation(fields:[accountId], references:[id], onDelete:Cascade)
+  reservation CopilotCreditReservation? @relation(fields:[reservationId], references:[id], onDelete:SetNull)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([referenceType, referenceId])
+  @@map("copilot_credit_ledger_entries")
+}
+
+model CopilotTokenizedMessageReceipt {
+  id String @id @default(cuid())
+  accountId String @map("account_id")
+  reservationId String @unique @map("reservation_id")
+  messageId String @unique @map("message_id")
+  conversationId String @map("conversation_id")
+  requestId String? @map("request_id")
+  status TokenizedMessageReceiptStatus @default(SETTLED)
+  messageCreditUnits Int @map("message_credit_units")
+  settledAtomic BigInt @map("settled_atomic")
+  priceUsdMicrosPerPwrc BigInt @map("price_usd_micros_per_pwrc")
+  referenceUsdMicros BigInt @map("reference_usd_micros")
+  promptHash String @map("prompt_hash")
+  responseHash String @map("response_hash")
+  receiptHash String @unique @map("receipt_hash")
+  anchorSignature String? @map("anchor_signature")
+  account CopilotCreditAccount @relation(fields:[accountId], references:[id], onDelete:Cascade)
+  reservation CopilotCreditReservation @relation(fields:[reservationId], references:[id], onDelete:Restrict)
+  message CopilotMessage @relation(fields:[messageId], references:[id], onDelete:Restrict)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@index([accountId, createdAt(sort: Desc)])
+  @@index([conversationId, createdAt])
+  @@map("copilot_tokenized_message_receipts")
+}
