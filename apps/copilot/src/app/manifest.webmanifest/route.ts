@@ -1,0 +1,1 @@
+export function GET(){return Response.json({name:"PowerChain Renewables Copilot",short_name:"Copilot",start_url:"/dashboard",display:"standalone",background_color:"#f6f8f7",theme_color:"#064e3b"},{headers:{"content-type":"application/manifest+json"}})}

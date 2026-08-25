@@ -1,0 +1,8 @@
+FROM node:24-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3001
+COPY apps/copilot/.next/standalone ./
+COPY apps/copilot/.next/static ./apps/copilot/.next/static
+COPY apps/copilot/public ./apps/copilot/public
+EXPOSE 3001
+CMD ["node","apps/copilot/server.js"]

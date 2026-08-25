@@ -1,0 +1,58 @@
+{
+  "name": "powerchain-capilot",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "programs/*"
+  ],
+  "scripts": {
+    "dev": "pnpm dev:apps",
+    "dev:web": "pnpm --dir apps/web run dev",
+    "dev:copilot": "pnpm --dir apps/copilot run dev",
+    "dev:backend": "pnpm --dir apps/backend run dev",
+    "predev:apps": "pnpm overlay:verify && pnpm ports:check",
+    "dev:apps": "concurrently --kill-others-on-fail --names web,copilot,backend --prefix-colors auto \"pnpm dev:web\" \"pnpm dev:copilot\" \"pnpm dev:backend\"",
+    "build": "pnpm build:apps",
+    "build:web": "pnpm --dir apps/web run build",
+    "build:copilot": "pnpm --dir apps/copilot run build",
+    "build:backend": "pnpm --dir apps/backend run build",
+    "prebuild:apps": "pnpm overlay:verify && pnpm prisma:generate && pnpm prisma:validate",
+    "build:apps": "pnpm build:backend && pnpm build:web && pnpm build:copilot",
+    "start:web": "pnpm --dir apps/web run start",
+    "start:copilot": "pnpm --dir apps/copilot run start",
+    "start:backend": "pnpm --dir apps/backend run start",
+    "typecheck:web": "pnpm --dir apps/web run typecheck",
+    "typecheck:copilot": "pnpm --dir apps/copilot run typecheck",
+    "typecheck:backend": "pnpm --dir apps/backend run typecheck",
+    "typecheck:auth": "pnpm --dir packages/auth run typecheck",
+    "typecheck:apps": "pnpm typecheck:web && pnpm typecheck:copilot && pnpm typecheck:backend",
+    "typecheck": "pnpm typecheck:auth && pnpm typecheck:apps",
+    "prisma:generate:web": "pnpm --dir apps/web run prisma:generate",
+    "prisma:generate:copilot": "pnpm --dir apps/copilot run prisma:generate",
+    "prisma:generate:backend": "pnpm --dir apps/backend run prisma:generate",
+    "prisma:generate": "pnpm prisma:generate:web && pnpm prisma:generate:copilot && pnpm prisma:generate:backend",
+    "prisma:validate:web": "pnpm --dir apps/web run prisma:validate",
+    "prisma:validate:copilot": "pnpm --dir apps/copilot run prisma:validate",
+    "prisma:validate:backend": "pnpm --dir apps/backend run prisma:validate",
+    "prisma:validate": "pnpm prisma:validate:web && pnpm prisma:validate:copilot && pnpm prisma:validate:backend",
+    "config:doctor": "pnpm --dir apps/copilot run config:doctor && pnpm workspace:doctor",
+    "workspace:doctor": "node scripts/powerchain-workspace.mjs doctor",
+    "peers:check": "node scripts/powerchain-workspace.mjs peers",
+    "ports:check": "node scripts/powerchain-workspace.mjs ports",
+    "overlay:verify": "node scripts/verify-installed.mjs",
+    "clean:next": "node scripts/clean-app-caches.mjs",
+    "dev:reset": "pnpm clean:next && pnpm dev:apps",
+    "validate": "pnpm overlay:verify && pnpm workspace:doctor && pnpm prisma:generate && pnpm prisma:validate && pnpm config:doctor && pnpm peers:check && pnpm typecheck",
+    "verify:build": "pnpm validate && pnpm build:apps",
+    "install:verified": "pnpm install --no-frozen-lockfile && pnpm overlay:verify"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.1"
+  }
+}

@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model BackendAuditEvent {
+  id        String   @id @default(cuid())
+  requestId String   @map("request_id")
+  service   String
+  action    String
+  status    String
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([requestId])
+  @@index([service, createdAt(sort: Desc)])
+  @@map("backend_audit_events")
+}
